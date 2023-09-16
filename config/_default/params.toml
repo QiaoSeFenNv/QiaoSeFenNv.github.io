@@ -1,0 +1,56 @@
+# Meta Data for SEO
+
+## Homepage
+title = "QiaoSeFenNv"
+titleSeparator = "-"
+titleAddition = ""
+description = ""
+
+## Open Graph + Twitter Cards
+#images = ["doks.png"]
+#twitterSite = "henkverlinde"
+#twitterCreator = "henkverlinde"
+#facebookAuthor = "verlinde.henk"
+#facebookPublisher = "verlinde.henk"
+#ogLocale = "en_US"
+
+## JSON-LD
+schemaType = "Organization"
+schemaLogo = "logo-doks.png"
+schemaGitHub = "https://github.com/QiaoSeFenNv"
+schemaSection = "blog"
+
+## Sitelinks Search Box
+siteLinksSearchBox = false
+
+## Chrome Browser
+themeColor = "#fff"
+
+# Images
+quality = 85
+bgColor = "#fff"
+landscapePhotoWidths = [900, 800, 700, 600, 500]
+portraitPhotoWidths = [800, 700, 600, 500]
+lqipWidth = "20x"
+
+# Footer
+footer = "Copyright © 2023-present <a href=\"https://github.com/QiaoSeFenNv\">QiaoSeFenNv</a>"
+
+# Alert
+alert = false
+alertText = "Like Doks? <a class=\"alert-link\" href=\"https://github.com/h-enk/doks/stargazers\">Star on GitHub</a>. Thanks!</a>"
+
+# Edit Page, 是否开启这个 md 在github上可编辑, 到时候看情况开启吧
+docsRepo = "https://github.com/h-enk/doks"
+editPage = false
+
+[options]
+  lazySizes = true
+  clipBoard = true
+  instantPage = true
+  flexSearch = true
+  darkMode = true
+  bootStrapJs = false
+  breadCrumb = false
+  highLight = true
+  kaTex = false

@@ -1,0 +1,10 @@
+[[main]]
+  name = "GitHub"
+  url = "https://github.com/QiaoSeFenNv"
+  weight = 10
+
+[[social]]
+  name = "JueJin"
+  url = "https://juejin.cn/user/2683256427781688"
+  weight = 20
+
