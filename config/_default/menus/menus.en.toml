@@ -1,6 +1,6 @@
 [[main]]
   name = "Official Docs"
-  url = "/docs/guides/example-guide/"
+  url = "/docs"
   weight = 10
 
 
