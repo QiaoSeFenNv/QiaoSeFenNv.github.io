@@ -1,6 +1,6 @@
 ---
-title: "Shiro"
-description: "shiro 官方中文文档"
+title: "Kafka"
+description: "Kafka 官方中文文档"
 summary: ""
 date: 2023-09-07T16:12:37+02:00
 lastmod: 2023-09-07T16:12:37+02:00
@@ -9,7 +9,7 @@ images: []
 menu:
   docs:
     parent: ""
-    identifier: "Shiro-22e9ba8aefa7sdf9891199cf8db3a08cd"
+    identifier: "Kafka-ee514306871548sd6e68dea3359133ad"
 weight: 900
 toc: true
 ---
