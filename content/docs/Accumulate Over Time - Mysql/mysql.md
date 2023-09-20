@@ -166,6 +166,39 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 
 
 
+## 联合数据
+
+- 为了人我们可以将表中不同的列放置在同一个列中，我们可以使用 `UNION` 和 `UNION ALL` 字段来完成。
+
+**要求：如何将 requester_id 字段和 accepter_id 字段整合为一组可以重复的表 **
+
+```
++--------------+-------------+-------------+
+| requester_id | accepter_id | accept_date |
++--------------+-------------+-------------+
+| 1            | 2           | 2016/06/03  |
+| 1            | 3           | 2016/06/08  |
+| 2            | 3           | 2016/06/08  |
+| 3            | 4           | 2016/06/09  |
++--------------+-------------+-------------+
+```
+
+>***Tip***
+>
+>```mysql
+>select requester_id as ids from RequestAccepted
+>union all
+>select accepter_id as ids from RequestAccepted
+>```
+>
+>`UNION`合并的数据不可重复
+>
+>`UNION` 合并的数据可以重复
+>
+>摘自：[602. 好友申请 II ：谁有最多的好友](https://leetcode.cn/problems/friend-requests-ii-who-has-the-most-friends/)
+
+
+
 
 
 
