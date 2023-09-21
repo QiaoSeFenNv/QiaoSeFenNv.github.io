@@ -200,6 +200,49 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 
 
 
+## 逻辑判断
+
+- 在sql中进行逻辑判断输出，我们想要的结果，可以使用`CASE WHEN THEN ELSE`
+
+**要求：输出树中每个节点的类型,p_id 为 null 出书Root、中间节点为 Inner、叶子也 Leaf **
+
+```diff
++----+------+
+| id | p_id |
++----+------+
+| 1  | null |
+| 2  | 1    |
+| 3  | 1    |
+| 4  | 2    |
+| 5  | 2    |
++----+------+
+```
+
+>***Tip***
+>
+>```mysql
+>
+>SELECT
+>    id,
+>    (
+>        CASE
+>            WHEN p_id IS NULL THEN 'Root'
+>            WHEN id NOT IN(
+>                SELECT
+>                    p_id
+>                FROM tree
+>                WHERE p_id IS NOT NULL
+>            ) THEN 'Leaf'
+>            ELSE 'Inner'
+>        END
+>    )as type
+>FROM tree
+>```
+>
+>摘自：[608. 树节点](https://leetcode.cn/problems/tree-node/)
+
+
+
 
 
 
