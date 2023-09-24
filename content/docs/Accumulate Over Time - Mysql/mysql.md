@@ -204,7 +204,7 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 
 - 在sql中进行逻辑判断输出，我们想要的结果，可以使用`CASE WHEN THEN ELSE`
 
-**要求：输出树中每个节点的类型,p_id 为 null 出书Root、中间节点为 Inner、叶子也 Leaf **
+**要求：输出树中每个节点的类型,p_id 为 null 出书Root、中间节点为 Inner、叶子也 Leaf**
 
 ```diff
 +----+------+
@@ -248,6 +248,52 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 
 
 
+
+## 条件判断
+
+- 当存在只有两个分支的判断时，可以使用If函数来进行逻辑判断
+
+要求：id是否为奇数还是偶数，以及判断表的长度是否等于奇数
+
+```diff
++----+---------+
+| id | student |
++----+---------+
+| 1  | Abbot   |
+| 2  | Doris   |
+| 3  | Emerson |
+| 4  | Green   |
+| 5  | Jeames  |
++----+---------+
+```
+
+MySQL的IF函数是一种条件函数，它允许根据指定的条件在两个或多个不同的值之间进行选择。它的语法如下：
+
+```mysql
+IF(condition, value_if_true, value_if_false)
+
+```
+
+它可以放在`select`语句后，也可以方位`where`语句后等等，只要是想表达输出一个值的地方，它可以被使用
+
+
+>***Tip***
+>
+>```mysql
+>
+>SELECT id-1 AS id, student
+>FROM Seat
+>WHERE (id % 2) = 0
+>
+>UNION ALL
+>
+>SELECT IF(id = (SELECT MAX(id) FROM Seat), id, id+1), student
+>FROM Seat
+>WHERE (id % 2) != 0
+>ORDER BY id;
+>```
+>
+>摘自：[626. 换座位](https://leetcode.cn/problems/exchange-seats/)
 
 
 
