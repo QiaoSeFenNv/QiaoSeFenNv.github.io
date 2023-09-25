@@ -299,5 +299,28 @@ IF(condition, value_if_true, value_if_false)
 
 
 
+- 在`Mysql`遇到判断两种情况，我们可以使用IF(value,true vale, false value) 语句
+
+**要求：判断是否是三角形**
+
+```diff
++----+----+----+
+| 13 | 15 | 30 |
+| 10 | 20 | 15 |
++----+----+----+
+```
+
+>***Tip***
+>
+>```
+>SELECT *,
+>       IF(((x + y) > z) && ((x + z) > y) && ((y + z) > x), 'Yes', 'No') AS triangle
+>FROM triangle;
+>```
+>
+>摘自：[610. 判断三角形](https://leetcode.cn/problems/triangle-judgement/)
+
+
+
 
 
