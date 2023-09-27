@@ -319,6 +319,40 @@ IF(condition, value_if_true, value_if_false)
 >```
 >
 >摘自：[610. 判断三角形](https://leetcode.cn/problems/triangle-judgement/)
+>
+
+
+## 元组一致比较
+
+- 这个方法比较少见（可能是我写的Sql写太少了吧）,`(字段，字段) in ( 字段、字段)` 这是一个条件，它检查主查询中的元组是否在子查询的结果集中。如果是，则返回相应的行。
+
+**要求：**根据产品id 和 时间 来查询具体的数据
+
+```diff
+Sales 表：
++---------+------------+------+----------+-------+
+| sale_id | product_id | year | quantity | price |
++---------+------------+------+----------+-------+ 
+| 1       | 100        | 2008 | 10       | 5000  |
+| 2       | 100        | 2009 | 12       | 5000  |
+| 7       | 200        | 2011 | 15       | 9000  |
++---------+------------+------+----------+-------+
+```
+
+>```mysql
+>select
+>	product_id,
+>	year as first_year,
+>	quantity,
+>	price
+>from sales where (product_id, year) in (
+>	select product_id, min(year) from sales group by product_id
+>);
+>```
+>
+>摘自：[产品销售分析 III](https://leetcode.cn/problems/product-sales-analysis-iii/)
+
+
 
 
 
