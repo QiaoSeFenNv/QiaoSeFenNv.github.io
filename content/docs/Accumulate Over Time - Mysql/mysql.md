@@ -170,7 +170,7 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 
 - 为了人我们可以将表中不同的列放置在同一个列中，我们可以使用 `UNION` 和 `UNION ALL` 字段来完成。
 
-**要求：如何将 requester_id 字段和 accepter_id 字段整合为一组可以重复的表 **
+**要求：如何将 requester_id 字段和 accepter_id 字段整合为一组可以重复的表**
 
 ```
 +--------------+-------------+-------------+
@@ -332,13 +332,14 @@ IF(condition, value_if_true, value_if_false)
 Sales 表：
 +---------+------------+------+----------+-------+
 | sale_id | product_id | year | quantity | price |
-+---------+------------+------+----------+-------+ 
++---------+------------+------+----------+-------+
 | 1       | 100        | 2008 | 10       | 5000  |
 | 2       | 100        | 2009 | 12       | 5000  |
 | 7       | 200        | 2011 | 15       | 9000  |
 +---------+------------+------+----------+-------+
 ```
 
+>***Tip***
 >```mysql
 >select
 >	product_id,
@@ -389,10 +390,11 @@ Sales table:
 
 ```
 
+>***Tip***
 >```sql
 >SELECT s.product_id , p.product_name
 >FROM Sales AS s
->LEFT JOIN Product AS p 
+>LEFT JOIN Product AS p
 >ON s.product_id = p.product_id
 >GROUP BY s.product_id
 >HAVING MIN(sale_date) >= '2019-01-01' AND MAX(sale_date) <= '2019-03-31'
@@ -406,21 +408,21 @@ Sales table:
 >```sql
 >SELECT
 >	DISTINCT p.product_id,
->	p.product_name 
+>	p.product_name
 >FROM
 >	Product p
->	LEFT JOIN Sales s ON p.product_id = s.product_id 
+>	LEFT JOIN Sales s ON p.product_id = s.product_id
 >WHERE
->	s.sale_date BETWEEN '2019-01-01' 
->	AND '2019-03-31' 
+>	s.sale_date BETWEEN '2019-01-01'
+>	AND '2019-03-31'
 >	AND p.product_id NOT IN (
 >	SELECT
->		s.product_id 
+>		s.product_id
 >	FROM
->		 Sales s 
+>		 Sales s
 >	WHERE
->		s.sale_date NOT BETWEEN '2019-01-01' 
->	AND '2019-03-31' 
+>		s.sale_date NOT BETWEEN '2019-01-01'
+>	AND '2019-03-31'
 >	)
 >```
 >

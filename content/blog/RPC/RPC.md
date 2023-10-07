@@ -15,9 +15,6 @@ pinned: false
 homepage: false
 ---
 
-## 前言
-
-
 
 ## 几个问题？
 

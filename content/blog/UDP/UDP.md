@@ -18,9 +18,6 @@ homepage: false
 
 
 
-## UDP
-
-UDP（User Datagram Protocol）是一种无连接的传输层协议，它不提供像TCP一样的可靠性和流控制，但它具有更低的开销和更快的传输速度，适合在要求实时性较高，但可靠性要求不高的场景下使用
 
 ### UDP协议原理：
 
