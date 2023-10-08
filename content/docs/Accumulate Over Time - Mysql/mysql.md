@@ -432,3 +432,55 @@ Sales table:
 
 
 
+## 分组条件筛选的选择
+
+- 对于分组筛选，通常我们有两个选择，
+  - 先过滤数据集使用`where`语句先对数据过滤，在分组
+  - 先分组，在使用`having`对分组进行过滤
+
+
+**要求：**统计截至 `2019-07-27`（包含2019-07-27），近 `30` 天的每日活跃用户数
+
+```diff
++---------+------------+---------------+---------------+
+| user_id | session_id | activity_date | activity_type |
++---------+------------+---------------+---------------+
+| 1       | 1          | 2019-07-20    | open_session  |
+| 1       | 1          | 2019-07-20    | scroll_down   |
+| 1       | 1          | 2019-07-20    | end_session   |
+| 2       | 4          | 2019-07-20    | open_session  |
+| 2       | 4          | 2019-07-21    | send_message  |
+| 2       | 4          | 2019-07-21    | end_session   |
+| 3       | 2          | 2019-07-21    | open_session  |
+| 3       | 2          | 2019-07-21    | send_message  |
+| 3       | 2          | 2019-07-21    | end_session   |
+| 4       | 3          | 2019-06-25    | open_session  |
+| 4       | 3          | 2019-06-25    | end_session   |
++---------+------------+---------------+---------------+
+```
+
+>***Tip***
+>
+>先 `where` 再 `group by` 效率更高，因为先把数据集过滤掉，分组操作的数据集就少
+>
+>```sql
+>SELECT activity_date AS day , COUNT(DISTINCT user_id) AS active_users
+>FROM activity
+>WHERE activity_date BETWEEN '2019-06-28' AND '2019-07-27'
+>GROUP BY activity_date
+>
+>```
+>
+>先 `group by` 再 `having` 它是再分组之后进行筛选，筛选的数据集是表中的所有数据，效率低
+>
+>```mysql
+>select  a.activity_date as day,count( DISTINCT a.user_id) as active_users   from activity a GROUP BY a.activity_date HAVING  a.activity_date BETWEEN '2019-06-28' and '2019-07-27'
+>```
+>
+>总结：推荐先使用`where` 而不是在`group by` 中使用 `having`。如果是必要的，也可以组合使用`where`提前筛选出数据集
+
+
+
+
+
+
