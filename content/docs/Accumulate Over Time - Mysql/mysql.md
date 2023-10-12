@@ -480,6 +480,99 @@ Sales table:
 >总结：推荐先使用`where` 而不是在`group by` 中使用 `having`。如果是必要的，也可以组合使用`where`提前筛选出数据集
 
 
+## 列转行
+
+- 如何将列的数据变为列的数据呢？通过可以采用 `group by` + 特定的mysql语句来完成
+
+**要求：重新格式化表格，使得 **每个月** 都有一个部门 id 列和一个收入列。**
+
+```diff
+输入：
+Department table:
++------+---------+-------+
+| id   | revenue | month |
++------+---------+-------+
+| 1    | 8000    | Jan   |
+| 2    | 9000    | Jan   |
+| 3    | 10000   | Feb   |
+| 1    | 7000    | Feb   |
+| 1    | 6000    | Mar   |
++------+---------+-------+
+输出：
++------+-------------+-------------+-------------+-----+-------------+
+| id   | Jan_Revenue | Feb_Revenue | Mar_Revenue | ... | Dec_Revenue |
++------+-------------+-------------+-------------+-----+-------------+
+| 1    | 8000        | 7000        | 6000        | ... | null        |
+| 2    | 9000        | null        | null        | ... | null        |
+| 3    | null        | 10000       | null        | ... | null        |
++------+-------------+-------------+-------------+-----+-------------+
+```
+
+>***Tip***
+>
+>```mysql
+>SELECT 
+>    id,
+>    SUM(CASE WHEN month = 'Jan' THEN revenue END) AS Jan_Revenue,
+>    SUM(CASE WHEN month = 'Feb' THEN revenue END) AS Feb_Revenue,
+>    SUM(CASE WHEN month = 'Mar' THEN revenue END) AS Mar_Revenue,
+>    SUM(CASE WHEN month = 'Apr' THEN revenue END) AS Apr_Revenue,
+>    SUM(CASE WHEN month = 'May' THEN revenue END) AS May_Revenue,
+>    SUM(CASE WHEN month = 'Jun' THEN revenue END) AS Jun_Revenue,
+>    SUM(CASE WHEN month = 'Jul' THEN revenue END) AS Jul_Revenue,
+>    SUM(CASE WHEN month = 'Aug' THEN revenue END) AS Aug_Revenue,
+>    SUM(CASE WHEN month = 'Sep' THEN revenue END) AS Sep_Revenue,
+>    SUM(CASE WHEN month = 'Oct' THEN revenue END) AS Oct_Revenue,
+>    SUM(CASE WHEN month = 'Nov' THEN revenue END) AS Nov_Revenue,
+>    SUM(CASE WHEN month = 'Dec' THEN revenue END) AS Dec_Revenue
+>FROM Department
+>GROUP BY id;
+>```
+>
+>对于这个问题，需要注意的地方就是:
+>
+>解析摘自：[评论区](https://leetcode.cn/problems/reformat-department-table/solutions/343480/guan-yu-group-byyu-sumde-pei-he-by-xxiao053/)
+>
+> GROUP BY id 会使department表按照id分组，生成一张虚拟表
+>
+>```diff
+>+------+---------+-------+
+>| id   | revenue | month |
+>+------+---------+-------+
+>|      | 8000    | Jan   |
+>| 1    | 7000    | Feb   |
+>|      | 6000    | Mar   |
+>+------+---------+-------+
+>| 2    | 9000    | Jan   |
+>+------+---------+-------+
+>| 3    | 10000   | Feb   |
+>+------+---------+-------+
+>```
+>
+>接着如果我们通过`CASE WHEN month = 'Nov' THEN revenue END`语句来处理就会出现下面这种情况
+>
+>```diff
+>+------+---------+-------+---------------+------------------------------------------+
+>| id   | revenue | month | `month`='Feb' | case when `month`='Feb' then revenue end |
+>+------+---------+-------+---------------+------------------------------------------+
+>|      | 8000    | Jan   |       0       |                  null                    |
+>| 1    | 7000    | Feb   |       1       |                  7000                    |
+>|      | 6000    | Mar   |       0       |                  null                    |
+>+------+---------+-------+---------------+------------------------------------------+
+>| 2    | 9000    | Jan   |       0       |                  null                    |
+>+------+---------+-------+---------------+------------------------------------------+
+>| 3    | 10000   | Feb   |       1       |                  15000                   |
+>+------+---------+-------+---------------+------------------------------------------+
+>```
+>
+>如果，我们没有使用`sum`或者`max`来进行处理，它可能会随机返回 null 、7000、 null中的数据。因此，我们可以通过聚合函数
+>
+>`sum` `max`等等来进行处理。
+>
+>因为，7000+null+null = 7000,就是说每一个条件只会有一个唯一的值
+>
+>摘自：[1179. 重新格式化部门表](https://leetcode.cn/problems/reformat-department-table/)
+
 
 
 
