@@ -576,4 +576,51 @@ Department table:
 
 
 
+## 组合分组+日期格式
+
+- 分组`group by`后面不只可以一个字段，可以放多个字段
+- `DATE_FORMAT(trans_date, '%Y-%m')`日期格式化函数
+
+**要求：**查找每个月和每个国家/地区的事务数及其总金额、已批准的事务数及其总金额
+
+```diff
+输入：
+Transactions table:
++------+---------+----------+--------+------------+
+| id   | country | state    | amount | trans_date |
++------+---------+----------+--------+------------+
+| 121  | US      | approved | 1000   | 2018-12-18 |
+| 122  | US      | declined | 2000   | 2018-12-19 |
+| 123  | US      | approved | 2000   | 2019-01-01 |
+| 124  | DE      | approved | 2000   | 2019-01-07 |
++------+---------+----------+--------+------------+
+输出：
++----------+---------+-------------+----------------+--------------------+-----------------------+
+| month    | country | trans_count | approved_count | trans_total_amount | approved_total_amount |
++----------+---------+-------------+----------------+--------------------+-----------------------+
+| 2018-12  | US      | 2           | 1              | 3000               | 1000                  |
+| 2019-01  | US      | 1           | 1              | 2000               | 2000                  |
+| 2019-01  | DE      | 1           | 1              | 2000               | 2000                  |
++----------+---------+-------------+----------------+--------------------+-----------------------+
+```
+
+>***Tip***
+>
+>```mysql
+>SELECT DATE_FORMAT(trans_date, '%Y-%m') AS month,
+>    country,
+>    COUNT(*) AS trans_count,
+>    COUNT(IF(state = 'approved', 1, NULL)) AS approved_count,
+>    SUM(amount) AS trans_total_amount,
+>    SUM(IF(state = 'approved', amount, 0)) AS approved_total_amount
+>FROM transactions
+>GROUP BY month, country
+>```
+>
+>这里需要注意分组的时候，时间是有日期的。如果是表原有的数据进行分组。那么分组出来的结果也是错误的。需要进行转换后在进行分组
+>
+>摘自：[1193. 每月交易 I](https://leetcode.cn/problems/monthly-transactions-i/)
+>
+
+
 
