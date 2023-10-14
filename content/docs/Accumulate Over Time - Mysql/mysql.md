@@ -511,7 +511,7 @@ Department table:
 >***Tip***
 >
 >```mysql
->SELECT 
+>SELECT
 >    id,
 >    SUM(CASE WHEN month = 'Jan' THEN revenue END) AS Jan_Revenue,
 >    SUM(CASE WHEN month = 'Feb' THEN revenue END) AS Feb_Revenue,
@@ -581,7 +581,7 @@ Department table:
 - 分组`group by`后面不只可以一个字段，可以放多个字段
 - `DATE_FORMAT(trans_date, '%Y-%m')`日期格式化函数
 
-**要求：**查找每个月和每个国家/地区的事务数及其总金额、已批准的事务数及其总金额
+**要求：** 查找每个月和每个国家/地区的事务数及其总金额、已批准的事务数及其总金额
 
 ```diff
 输入：
@@ -623,4 +623,49 @@ Transactions table:
 >
 
 
+## 分组计算
+- 我可以通过分组，然后配合计算函数与if函数筛选出我们想要的数据
 
+**要求：** 在 MySQL 内做简单的计算操作，比如求平均值，求和等
+
+```diff
+输入：
+Queries table:
++------------+-------------------+----------+--------+
+| query_name | result            | position | rating |
++------------+-------------------+----------+--------+
+| Dog        | Golden Retriever  | 1        | 5      |
+| Dog        | German Shepherd   | 2        | 5      |
+| Dog        | Mule              | 200      | 1      |
+| Cat        | Shirazi           | 5        | 2      |
+| Cat        | Siamese           | 3        | 3      |
+| Cat        | Sphynx            | 7        | 4      |
++------------+-------------------+----------+--------+
+输出：
++------------+---------+-----------------------+
+| query_name | quality | poor_query_percentage |
++------------+---------+-----------------------+
+| Dog        | 2.50    | 33.33                 |
+| Cat        | 0.66    | 33.33                 |
++------------+---------+-----------------------+
+解释：
+Dog 查询结果的质量为 ((5 / 1) + (5 / 2) + (1 / 200)) / 3 = 2.50
+Dog 查询结果的劣质查询百分比为 (1 / 3) * 100 = 33.33
+
+Cat 查询结果的质量为 ((2 / 5) + (3 / 3) + (4 / 7)) / 3 = 0.66
+Cat 查询结果的劣质查询百分比为 (1 / 3) * 100 = 33.33
+
+```
+
+>***Tip***
+>
+>```mysql
+>select s.query_name ,  round( sum( s.rating  / s.position ) / count(*),2)  as quality,
+>round( sum(if( s.rating <3, 1,0) ) /count(*) *100,2) as poor_query_percentage
+>from Queries s
+>group by  s.query_name
+>```
+>这里要注意一分组之后，在mysql它会将数据放在同一列中
+>
+>摘自：[1193. 每月交易 I](https://leetcode.cn/problems/monthly-transactions-i/)
+>[1211. 查询结果的质量和占比](https://leetcode.cn/problems/queries-quality-and-percentage/)
