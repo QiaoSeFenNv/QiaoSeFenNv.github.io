@@ -669,3 +669,83 @@ Cat 查询结果的劣质查询百分比为 (1 / 3) * 100 = 33.33
 >
 >摘自：[1193. 每月交易 I](https://leetcode.cn/problems/monthly-transactions-i/)
 >[1211. 查询结果的质量和占比](https://leetcode.cn/problems/queries-quality-and-percentage/)
+
+
+
+
+
+## Sum 开窗函数
+
+- `sum() over() `通过使用sum可以对数据库列表中的数据进行依次累加
+
+**要求：** 寻找最后一个能进入电梯的人
+
+```diff
+Queue 表
++-----------+-------------+--------+------+
+| person_id | person_name | weight | turn |
++-----------+-------------+--------+------+
+| 5         | Alice       | 250    | 1    |
+| 4         | Bob         | 175    | 5    |
+| 3         | Alex        | 350    | 2    |
+| 6         | John Cena   | 400    | 3    |
+| 1         | Winston     | 500    | 6    |
+| 2         | Marie       | 200    | 4    |
++-----------+-------------+--------+------+
++------+----+-----------+--------+--------------+
+| Turn | ID | Name      | Weight | Total Weight |
++------+----+-----------+--------+--------------+
+| 1    | 5  | Alice     | 250    | 250          |
+| 2    | 3  | Alex      | 350    | 600          |
+| 3    | 6  | John Cena | 400    | 1000         | (最后一个上巴士)
+| 4    | 2  | Marie     | 200    | 1200         | (无法上巴士)
+| 5    | 4  | Bob       | 175    | ___          |
+| 6    | 1  | Winston   | 500    | ___          |
++------+----+-----------+--------+--------------+
+```
+
+>***Tip***
+>
+>我们其实需要依次对weight的值进行累加，然后在寻找出满足要求的人，如果我可以实现使用sql绘制出下面`cumu_weight`的table就很好找了。如何实现呢？
+>
+>```
+>
+>+----+-----------+------+-----------+
+>|turn|person_name|weight|cumu_weight|
+>+----+-----------+------+-----------+
+>|1   |Alice      |250   |250        |
+>|2   |Alex       |350   |600        |
+>|3   |John Cena  |400   |1000       |
+>|4   |Marie      |200   |1200       |
+>|5   |Bob        |175   |1375       |
+>|6   |Winston    |500   |1875       |
+>+----+-----------+------+-----------+
+>```
+>
+>我们可以通过 sum 的开窗函数来实现上面的 table 查询
+>
+>```mysql
+>select
+>    turn,
+>    person_name,weight,
+>    sum(weight) over(order by turn) as cumu_weight
+>from Queue
+>```
+>
+>最后通过筛选出我们需要的值
+>
+>```mysql
+>select
+>    person_name
+>from
+>(select
+>    turn,
+>    person_name,weight,
+>    sum(weight) over(order by turn) as cumu_weight
+>from Queue) t
+>where cumu_weight <= 1000
+>order by turn desc
+>limit 1;
+>```
+>
+>摘自：[1204. 最后一个能进入巴士的人](https://leetcode.cn/problems/last-person-to-fit-in-the-bus/)
