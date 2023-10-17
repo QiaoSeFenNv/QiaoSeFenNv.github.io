@@ -17,7 +17,7 @@ toc: true
 
 - 为了判断一个值在某一列中是不是唯一的，我们可以使用 `GROUP BY` 和 `COUNT`。
 
-**要求：2015 年的投保额 (tiv_2015) 至少跟一个其他投保人在 2015 年的投保额相同**
+**要求：** 2015 年的投保额 (tiv_2015) 至少跟一个其他投保人在 2015 年的投保额相同
 
 ```markdown
 +-----+----------+----------+-----+-----+
@@ -170,7 +170,7 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 
 - 为了人我们可以将表中不同的列放置在同一个列中，我们可以使用 `UNION` 和 `UNION ALL` 字段来完成。
 
-**要求：如何将 requester_id 字段和 accepter_id 字段整合为一组可以重复的表**
+**要求：** 如何将 requester_id 字段和 accepter_id 字段整合为一组可以重复的表
 
 ```
 +--------------+-------------+-------------+
@@ -204,7 +204,7 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 
 - 在sql中进行逻辑判断输出，我们想要的结果，可以使用`CASE WHEN THEN ELSE`
 
-**要求：输出树中每个节点的类型,p_id 为 null 出书Root、中间节点为 Inner、叶子也 Leaf**
+**要求：** 输出树中每个节点的类型,p_id 为 null 出书Root、中间节点为 Inner、叶子也 Leaf
 
 ```diff
 +----+------+
@@ -253,7 +253,7 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 
 - 当存在只有两个分支的判断时，可以使用If函数来进行逻辑判断
 
-要求：id是否为奇数还是偶数，以及判断表的长度是否等于奇数
+**要求：** id是否为奇数还是偶数，以及判断表的长度是否等于奇数
 
 ```diff
 +----+---------+
@@ -301,7 +301,7 @@ IF(condition, value_if_true, value_if_false)
 
 - 在`Mysql`遇到判断两种情况，我们可以使用IF(value,true vale, false value) 语句
 
-**要求：判断是否是三角形**
+**要求：** 判断是否是三角形
 
 ```diff
 +----+----+----+
@@ -326,7 +326,7 @@ IF(condition, value_if_true, value_if_false)
 
 - 这个方法比较少见（可能是我写的Sql写太少了吧）,`(字段，字段) in ( 字段、字段)` 这是一个条件，它检查主查询中的元组是否在子查询的结果集中。如果是，则返回相应的行。
 
-**要求：**根据产品id 和 时间 来查询具体的数据
+**要求：** 根据产品id 和 时间 来查询具体的数据
 
 ```diff
 Sales 表：
@@ -361,7 +361,7 @@ Sales 表：
 
 - 我们可以通过使用`Group by + Min + Max`函数进行区间选择。
 
-要求：根据产品id 和 时间 来查询具体的数据，并且当且仅当产品的时间在一定的区间内。
+**要求：** 根据产品id 和 时间 来查询具体的数据，并且当且仅当产品的时间在一定的区间内。
 
 ```diff
 Product table:
@@ -439,7 +439,7 @@ Sales table:
   - 先分组，在使用`having`对分组进行过滤
 
 
-**要求：**统计截至 `2019-07-27`（包含2019-07-27），近 `30` 天的每日活跃用户数
+**要求：** 统计截至 `2019-07-27`（包含2019-07-27），近 `30` 天的每日活跃用户数
 
 ```diff
 +---------+------------+---------------+---------------+
@@ -484,7 +484,7 @@ Sales table:
 
 - 如何将列的数据变为列的数据呢？通过可以采用 `group by` + 特定的mysql语句来完成
 
-**要求：重新格式化表格，使得 **每个月** 都有一个部门 id 列和一个收入列。**
+**要求：** 重新格式化表格，使得 **每个月** 都有一个部门 id 列和一个收入列。
 
 ```diff
 输入：
@@ -829,4 +829,161 @@ UnitsSold table:
 >- 适用于一些特殊情况，例如需要使用非等值连接条件时，或者需要根据多个连接条件进行筛选。
 >
 >
+
+
+
+## 保留Null值
+
+**要求：** 查询出每个学生参加每一门科目测试的次数，结果按 `student_id` 和 `subject_name` 排序。
+
+```diff
+Students table:
++------------+--------------+
+| student_id | student_name |
++------------+--------------+
+| 1          | Alice        |
+| 2          | Bob          |
+| 13         | John         |
+| 6          | Alex         |
++------------+--------------+
+Subjects table:
++--------------+
+| subject_name |
++--------------+
+| Math         |
+| Physics      |
+| Programming  |
++--------------+
+Examinations table:
++------------+--------------+
+| student_id | subject_name |
++------------+--------------+
+| 1          | Math         |
+| 1          | Physics      |
+| 1          | Programming  |
+| 2          | Programming  |
+| 1          | Physics      |
+| 1          | Math         |
+| 13         | Math         |
+| 13         | Programming  |
+| 13         | Physics      |
+| 2          | Math         |
+| 1          | Math         |
++------------+--------------+
+输出：
++------------+--------------+--------------+----------------+
+| student_id | student_name | subject_name | attended_exams |
++------------+--------------+--------------+----------------+
+| 1          | Alice        | Math         | 3              |
+| 1          | Alice        | Physics      | 2              |
+| 1          | Alice        | Programming  | 1              |
+| 2          | Bob          | Math         | 1              |
+| 2          | Bob          | Physics      | 0              |
+| 2          | Bob          | Programming  | 1              |
+| 6          | Alex         | Math         | 0              |
+| 6          | Alex         | Physics      | 0              |
+| 6          | Alex         | Programming  | 0              |
+| 13         | John         | Math         | 1              |
+| 13         | John         | Physics      | 1              |
+| 13         | John         | Programming  | 1              |
++------------+--------------+--------------+----------------+
+```
+
+
+
+### 左连接：
+
+- 通过我们再做多表查询的是时候会使用到`left join`函数，如果我们要连接的结果集中有满足要求的数则会出现`null`
+
+>***Tip***
+>
+>```mysql
+>SELECT
+>    s.student_id,
+>    s.student_name,
+>    su.subject_name,
+>   COUNT(e.subject_name) AS attended_exams
+>FROM
+>    Students AS s
+>JOIN
+>    Subjects AS su
+>LEFT JOIN
+>    Examinations AS e
+>ON
+>    e.student_id = s.student_id
+>AND
+>    e.subject_name = su.subject_name
+>GROUP BY
+>    s.student_id,
+>    su.subject_name
+>ORDER BY
+>    s.student_id,
+>    su.subject_name
+>```
+>
+>我们要知道`left join`的特点，才能查询出我们想要的答案。
+>
+>- LEFT JOIN的时候，会是以左表为主表，右表是连接表。左表的数据是完整的，如果匹配不到右表的数据会自动为NULL
+>- COUNT函数是不统计NULL的。但是函数会返回一个数值 0
+>
+>如果，我们不用`left join`想要查询出`null`值为 0 会比较麻烦
+>
+>摘自：[1280. 学生们参加各科测试的次数](https://leetcode.cn/problems/students-and-examinations/)
+
+### 交叉连接：
+
+- 交叉连接（Cross Join）是 MySQL 中的一种连接操作，也被称为笛卡尔积（Cartesian Product）。在交叉连接中，它会将两个表中的每一行与另一个表中的每一行进行组合，生成一个新的结果集。这意味着没有任何条件限制，两个表之间的所有可能的组合都会出现在结果中
+
+>***Tip***
+>
+>在实际应用中，通常要避免使用交叉连接，因为它会生成大量的行数，可能导致性能问题。但在某些情况下，交叉连接也可能有其用途，例如当你需要生成某种组合或排列的情况。
+>
+>先查询出所有的考试情况
+>
+>```mysql
+>SELECT 
+>    student_id, subject_name, COUNT(*) AS attended_exams
+>FROM 
+>    Examinations
+>GROUP BY 
+>    student_id, subject_name
+>
+>```
+>
+>再使用交叉连接查询出所有组合
+>
+>```mysql
+>SELECT 
+>    *
+>FROM
+>    Students s
+>CROSS JOIN
+>    Subjects sub
+>```
+>
+>最后，进行组合
+>
+>```mysql
+>SELECT 
+>    s.student_id, s.student_name, sub.subject_name, IFNULL(grouped.attended_exams, 0) AS attended_exams
+>FROM 
+>    Students s
+>CROSS JOIN 
+>    Subjects sub
+>LEFT JOIN (
+>    SELECT student_id, subject_name, COUNT(*) AS attended_exams
+>    FROM Examinations
+>    GROUP BY student_id, subject_name
+>) grouped 
+>ON s.student_id = grouped.student_id AND sub.subject_name = grouped.subject_name
+>ORDER BY s.student_id, sub.subject_name;
+>
+>```
+>
+>摘自：[1280. 学生们参加各科测试的次数](https://leetcode.cn/problems/students-and-examinations/)
+
+
+
+
+
 
