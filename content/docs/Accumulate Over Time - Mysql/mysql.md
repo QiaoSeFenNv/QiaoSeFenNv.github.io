@@ -47,7 +47,10 @@ toc: true
 
 
 
-## 查询多个连续的数据
+
+## 窗口函数的运用
+
+### 查询多个连续的数据
 
 - 对于连续性问题我们可以使用`row_number()`开窗函数产生新字段判断是否连续
 
@@ -76,7 +79,7 @@ SELECT
     Score
 FROM
     students
-ORDER BY students.Score desc
+ORDER BY students.Score desc 
 +--------+-------+
 | Student| Score |
 +--------+-------+
@@ -111,7 +114,7 @@ FROM
 SELECT
 	Student,
 	Score,
-	ROW_NUMBER() OVER ( PARTITION BY Score ORDER BY Score ) AS Ranking
+	ROW_NUMBER() OVER ( PARTITION BY Score ORDER BY Score ) AS Ranking 
 FROM
 	students
 
@@ -163,6 +166,86 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 - `PARTITION BY`: 用于将结果集分成分区（可选）。如果指定了此子句，窗口函数将在每个分区内独立计算行号。如果省略此子句，将在整个结果集上计算行号。
 - `ORDER BY`: 用于指定排序顺序，根据哪个列的值分配行号。
 
+
+
+### 一定访问时间内的数据
+
+**要求：** 如何累加一段时间区间内的值。我们可以考虑使用开窗函数。这里我们再补充一些开窗函数的知识
+
+```mysql
+窗口函数该怎么写？
+
+[你要的操作] OVER ( PARTITION BY  <用于分组的列名>
+                    ORDER BY <按序叠加的列名> 
+                    ROWS <窗口滑动的数据范围> )
+
+
+<窗口滑动的数据范围> 用来限定[ 你要的操作] 所运用的数据的范围，具体有如下这些：
+
+当前行 - current row
+之前的行 - preceding
+之后的行 - following
+无界限 - unbounded
+表示从前面的起点 - unbounded preceding
+表示到后面的终点 - unbounded following
+
+eg：
+取当前行和前五行：ROWS between 5 preceding and current row --共6行
+取当前行和后五行：ROWS between current row and 5 following --共6行
+取前五行和后五行：ROWS between 5 preceding and 5 folowing --共11行
+
+```
+
+```diff
+Customer 表:
++-------------+--------------+--------------+-------------+
+| customer_id | name         | visited_on   | amount      |
++-------------+--------------+--------------+-------------+
+| 1           | Jhon         | 2019-01-01   | 100         |
+| 2           | Daniel       | 2019-01-02   | 110         |
+| 3           | Jade         | 2019-01-03   | 120         |
+| 4           | Khaled       | 2019-01-04   | 130         |
+| 5           | Winston      | 2019-01-05   | 110         | 
+| 6           | Elvis        | 2019-01-06   | 140         | 
+| 7           | Anna         | 2019-01-07   | 150         |
+| 8           | Maria        | 2019-01-08   | 80          |
+| 9           | Jaze         | 2019-01-09   | 110         | 
+| 1           | Jhon         | 2019-01-10   | 130         | 
+| 3           | Jade         | 2019-01-10   | 150         | 
++-------------+--------------+--------------+-------------+
++--------------+--------------+----------------+
+| visited_on   | amount       | average_amount |
++--------------+--------------+----------------+
+| 2019-01-07   | 860          | 122.86         |
+| 2019-01-08   | 840          | 120            |
+| 2019-01-09   | 840          | 120            |
+| 2019-01-10   | 1000         | 142.86         |
++--------------+--------------+----------------+
+```
+
+>***Tip***
+>
+>```mysql
+>SELECT
+>   visited_on,
+>   sum_amount amount,
+>   ROUND( sum_amount / 7, 2 ) average_amount
+>FROM (
+>   SELECT
+>      visited_on,
+>      SUM( sum_amount ) OVER ( ORDER BY to_days(visited_on) RANGE BETWEEN 6 PRECEDING AND current ROW ) sum_amount
+>   FROM (
+>      SELECT
+>         visited_on,
+>         SUM( amount ) sum_amount
+>      FROM Customer
+>      GROUP BY visited_on
+>   ) tmp1
+>) tmp2
+>WHERE DATEDIFF(visited_on, ( SELECT MIN( visited_on ) FROM Customer )) >= 6;
+>```
+>
+>上述内容摘自：[1321. 餐馆营业额变化增长 评论](https://leetcode.cn/problems/restaurant-growth/) 
 
 
 
