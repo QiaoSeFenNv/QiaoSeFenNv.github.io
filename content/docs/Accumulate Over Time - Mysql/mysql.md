@@ -79,7 +79,7 @@ SELECT
     Score
 FROM
     students
-ORDER BY students.Score desc 
+ORDER BY students.Score desc
 +--------+-------+
 | Student| Score |
 +--------+-------+
@@ -114,7 +114,7 @@ FROM
 SELECT
 	Student,
 	Score,
-	ROW_NUMBER() OVER ( PARTITION BY Score ORDER BY Score ) AS Ranking 
+	ROW_NUMBER() OVER ( PARTITION BY Score ORDER BY Score ) AS Ranking
 FROM
 	students
 
@@ -176,7 +176,7 @@ ROW_NUMBER() OVER (PARTITION BY partition_expression ORDER BY sort_expression)
 窗口函数该怎么写？
 
 [你要的操作] OVER ( PARTITION BY  <用于分组的列名>
-                    ORDER BY <按序叠加的列名> 
+                    ORDER BY <按序叠加的列名>
                     ROWS <窗口滑动的数据范围> )
 
 
@@ -205,13 +205,13 @@ Customer 表:
 | 2           | Daniel       | 2019-01-02   | 110         |
 | 3           | Jade         | 2019-01-03   | 120         |
 | 4           | Khaled       | 2019-01-04   | 130         |
-| 5           | Winston      | 2019-01-05   | 110         | 
-| 6           | Elvis        | 2019-01-06   | 140         | 
+| 5           | Winston      | 2019-01-05   | 110         |
+| 6           | Elvis        | 2019-01-06   | 140         |
 | 7           | Anna         | 2019-01-07   | 150         |
 | 8           | Maria        | 2019-01-08   | 80          |
-| 9           | Jaze         | 2019-01-09   | 110         | 
-| 1           | Jhon         | 2019-01-10   | 130         | 
-| 3           | Jade         | 2019-01-10   | 150         | 
+| 9           | Jaze         | 2019-01-09   | 110         |
+| 1           | Jhon         | 2019-01-10   | 130         |
+| 3           | Jade         | 2019-01-10   | 150         |
 +-------------+--------------+--------------+-------------+
 +--------------+--------------+----------------+
 | visited_on   | amount       | average_amount |
@@ -245,7 +245,7 @@ Customer 表:
 >WHERE DATEDIFF(visited_on, ( SELECT MIN( visited_on ) FROM Customer )) >= 6;
 >```
 >
->上述内容摘自：[1321. 餐馆营业额变化增长 评论](https://leetcode.cn/problems/restaurant-growth/) 
+>上述内容摘自：[1321. 餐馆营业额变化增长 评论](https://leetcode.cn/problems/restaurant-growth/)
 
 
 
@@ -882,13 +882,13 @@ UnitsSold table:
 >	(
 >		sum( us.units ),
 >		ROUND( sum( p.price * us.units ) / sum( us.units ), 2 ),
->		0 
->	) AS average_price 
+>		0
+>	) AS average_price
 >FROM
 >	Prices p
->	LEFT JOIN UnitsSold us ON p.product_id = us.product_id 
->	AND us.purchase_date BETWEEN p.start_date 
->	AND p.end_date 
+>	LEFT JOIN UnitsSold us ON p.product_id = us.product_id
+>	AND us.purchase_date BETWEEN p.start_date
+>	AND p.end_date
 >GROUP BY
 >	p.product_id
 >```
@@ -976,7 +976,7 @@ Examinations table:
 
 ### 左连接：
 
-- 通过我们再做多表查询的是时候会使用到`left join`函数，如果我们要连接的结果集中有满足要求的数则会出现`null`
+- 通过我们再做多表查询的是时候会使用到`left join`函数，如果我们要连接的结果集中有满足要求的数则会出现`null`。注【这里的满足要求一般需靠考虑谁驱动谁。例如表A驱动表B。此时表B的数据有相比表A少，那么left连接是就会出现`NULL`】
 
 >***Tip***
 >
@@ -1024,11 +1024,11 @@ Examinations table:
 >先查询出所有的考试情况
 >
 >```mysql
->SELECT 
+>SELECT
 >    student_id, subject_name, COUNT(*) AS attended_exams
->FROM 
+>FROM
 >    Examinations
->GROUP BY 
+>GROUP BY
 >    student_id, subject_name
 >
 >```
@@ -1036,7 +1036,7 @@ Examinations table:
 >再使用交叉连接查询出所有组合
 >
 >```mysql
->SELECT 
+>SELECT
 >    *
 >FROM
 >    Students s
@@ -1047,17 +1047,17 @@ Examinations table:
 >最后，进行组合
 >
 >```mysql
->SELECT 
+>SELECT
 >    s.student_id, s.student_name, sub.subject_name, IFNULL(grouped.attended_exams, 0) AS attended_exams
->FROM 
+>FROM
 >    Students s
->CROSS JOIN 
+>CROSS JOIN
 >    Subjects sub
 >LEFT JOIN (
 >    SELECT student_id, subject_name, COUNT(*) AS attended_exams
 >    FROM Examinations
 >    GROUP BY student_id, subject_name
->) grouped 
+>) grouped
 >ON s.student_id = grouped.student_id AND sub.subject_name = grouped.subject_name
 >ORDER BY s.student_id, sub.subject_name;
 >
