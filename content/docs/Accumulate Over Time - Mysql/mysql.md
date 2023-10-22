@@ -405,6 +405,7 @@ IF(condition, value_if_true, value_if_false)
 >
 
 
+
 ## 元组一致比较
 
 - 这个方法比较少见（可能是我写的Sql写太少了吧）,`(字段，字段) in ( 字段、字段)` 这是一个条件，它检查主查询中的元组是否在子查询的结果集中。如果是，则返回相应的行。
@@ -1070,3 +1071,160 @@ Examinations table:
 
 
 
+
+## mysql 解题总结
+
+### 心得一
+
+解题思路：
+
+- 思路拆分
+  - 遇到mysql题可以先将要求和思路进行拆分，一步一步来做。大不了就是多写几行`sql`语句
+- 整合归纳
+  - 完成任务之后，我们可以进行优化和思考。是否有更好的解决办法
+
+摘自：[1393. 股票的资本损益](https://leetcode.cn/problems/capital-gainloss/)
+
+>```
+>输入：
+>Stocks 表:
+>+---------------+-----------+---------------+--------+
+>| stock_name    | operation | operation_day | price  |
+>+---------------+-----------+---------------+--------+
+>| Leetcode      | Buy       | 1             | 1000   |
+>| Corona Masks  | Buy       | 2             | 10     |
+>| Leetcode      | Sell      | 5             | 9000   |
+>| Handbags      | Buy       | 17            | 30000  |
+>| Corona Masks  | Sell      | 3             | 1010   |
+>| Corona Masks  | Buy       | 4             | 1000   |
+>| Corona Masks  | Sell      | 5             | 500    |
+>| Corona Masks  | Buy       | 6             | 1000   |
+>| Handbags      | Sell      | 29            | 7000   |
+>| Corona Masks  | Sell      | 10            | 10000  |
+>+---------------+-----------+---------------+--------+
+>输出：
+>+---------------+-------------------+
+>| stock_name    | capital_gain_loss |
+>+---------------+-------------------+
+>| Corona Masks  | 9500              |
+>| Leetcode      | 8000              |
+>| Handbags      | -23000            |
+>+---------------+-------------------+
+>```
+
+>***Tip***
+>
+>从题目中可知，我们要计算 `sell` 和 `buy` 之间差值。那么，我们可以编写两条sql语句
+>
+>**buy**
+>
+>```mysql
+>select stock_name,sum(price) as buy from stocks where operation = 'Buy' group by stocks.stock_name
+>```
+>
+>**sell**
+>
+>```mysql
+>select stock_name,sum(price) as sell from stocks where operation = 'Sell' group by stocks.stock_name
+>```
+>
+>有了这些数据，我们计算差值就可以得出我们想要的结果：
+>
+>```mysql
+>select s1.stock_name,(s2.sell - s1.buy) as capital_gain_loss  from
+>(select stock_name,sum(price) as buy from stocks where operation = 'Buy' group by stocks.stock_name) s1,
+>(select stock_name,sum(price) as sell from stocks where operation = 'Sell' group by stocks.stock_name) s2
+>where s1.stock_name = s2.stock_name;
+>```
+>
+>写到这样，就可以完成任务。但是，我们还需要考虑是否可以优化，或者是否有更好的方式。通过上面的思路，我可以进行变形。去分组判断类型即可。
+>
+>```mysql
+>select  stock_name,(sum( if(operation='Sell' ,price,-price)) ) as capital_gain_loss
+>from stocks
+>group by stock_name;
+>```
+>
+>优化完成，代码更加简洁。每一道mysql，都可以先做出来，在优化的方式。
+
+
+
+
+
+
+
+
+## mysql 解题总结
+
+### 心得一
+
+解题思路：
+
+- 思路拆分
+  - 遇到mysql题可以先将要求和思路进行拆分，一步一步来做。大不了就是多写几行`sql`语句
+- 整合归纳
+  - 完成任务之后，我们可以进行优化和思考。是否有更好的解决办法
+
+摘自：[1393. 股票的资本损益](https://leetcode.cn/problems/capital-gainloss/)
+
+>```
+>输入：
+>Stocks 表:
+>+---------------+-----------+---------------+--------+
+>| stock_name    | operation | operation_day | price  |
+>+---------------+-----------+---------------+--------+
+>| Leetcode      | Buy       | 1             | 1000   |
+>| Corona Masks  | Buy       | 2             | 10     |
+>| Leetcode      | Sell      | 5             | 9000   |
+>| Handbags      | Buy       | 17            | 30000  |
+>| Corona Masks  | Sell      | 3             | 1010   |
+>| Corona Masks  | Buy       | 4             | 1000   |
+>| Corona Masks  | Sell      | 5             | 500    |
+>| Corona Masks  | Buy       | 6             | 1000   |
+>| Handbags      | Sell      | 29            | 7000   |
+>| Corona Masks  | Sell      | 10            | 10000  |
+>+---------------+-----------+---------------+--------+
+>输出：
+>+---------------+-------------------+
+>| stock_name    | capital_gain_loss |
+>+---------------+-------------------+
+>| Corona Masks  | 9500              |
+>| Leetcode      | 8000              |
+>| Handbags      | -23000            |
+>+---------------+-------------------+
+>```
+
+>***Tip***
+>
+>从题目中可知，我们要计算 `sell` 和 `buy` 之间差值。那么，我们可以编写两条sql语句
+>
+>**buy**
+>
+>```mysql
+>select stock_name,sum(price) as buy from stocks where operation = 'Buy' group by stocks.stock_name
+>```
+>
+>**sell**
+>
+>```mysql
+>select stock_name,sum(price) as sell from stocks where operation = 'Sell' group by stocks.stock_name
+>```
+>
+>有了这些数据，我们计算差值就可以得出我们想要的结果：
+>
+>```mysql
+>select s1.stock_name,(s2.sell - s1.buy) as capital_gain_loss  from
+>(select stock_name,sum(price) as buy from stocks where operation = 'Buy' group by stocks.stock_name) s1,
+>(select stock_name,sum(price) as sell from stocks where operation = 'Sell' group by stocks.stock_name) s2
+>where s1.stock_name = s2.stock_name;
+>```
+>
+>写到这样，就可以完成任务。但是，我们还需要考虑是否可以优化，或者是否有更好的方式。通过上面的思路，我可以进行变形。去分组判断类型即可。
+>
+>```mysql
+>select  stock_name,(sum( if(operation='Sell' ,price,-price)) ) as capital_gain_loss
+>from stocks
+>group by stock_name;
+>```
+>
+>优化完成，代码更加简洁。每一道mysql，都可以先做出来，在优化的方式。
