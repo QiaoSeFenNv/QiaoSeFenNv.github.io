@@ -120,3 +120,55 @@ spring:
 >    }
 >```
 
+
+
+
+
+
+
+## Spring中MybatisMapper扫描问题
+
+通常，我们会将分模块的`mapper`以及实体类`entity`进行扫描。这样 spring 才能去读到相应的资源文件。
+
+```java
+@SpringBootApplication(scanBasePackages = "com.qiaose.*")
+@MapperScan("com.qiaose.mapper.*")
+@EnableOpenApi
+@Slf4j
+public class ApplicationRun extends SpringBootServletInitializer {
+    public static void main(String[] args) {
+        ConfigurableApplicationContext application = SpringApplication.run(ApplicationRun.class, args);
+        Environment env = application.getEnvironment();
+        String ip = null;
+        try {
+            ip = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+
+        String port = env.getProperty("server.port");
+        String path = env.getProperty("server.servlet.context-path");
+        if (StringUtils.isEmpty(path)) {
+            path = "";
+        }
+        log.info("\n----------------------------------------------------------\n\t" +
+                "Application  is running! Access URLs:\n\t" +
+                "Local访问网址: \t\thttp://localhost:" + port + path + "\n\t" +
+                "External访问网址: \thttp://" + ip + ":" + port + path + "\n\t" +
+                "Local Swagger2访问网址: \t\thttp://localhost:" + port + path+ "/swagger-ui/index.html " + "\n\t" +
+                "External访问网址: \thttp://" + ip + ":" + port + path + "/swagger-ui/index.html" +"\n\t" +
+                "----------------------------------------------------------");
+    }
+
+
+}
+```
+
+```yml
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+  type-aliases-package: com.qiaose.entity.*
+```
+
+如果此时配置的路径是错误，那么就会出现`mybatis` not find 问题。
+
