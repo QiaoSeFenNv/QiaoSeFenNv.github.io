@@ -1228,3 +1228,106 @@ Examinations table:
 >```
 >
 >优化完成，代码更加简洁。每一道mysql，都可以先做出来，在优化的方式。
+
+
+
+
+## 组内的值拼接字符串
+
+**要求：** 在分组之后，我需要将分组之后有相同的列，进行字符串拼接。那么此时，我们可以使用`GROUP_CONCAT`函数进行编写。
+
+`GROUP_CONCAT` 是 MySQL 中的一个聚合函数，用于将组内的值连接成一个字符串。通常，它用于在查询结果中将多行数据连接成一行，以实现数据的汇总或展示。
+
+```diff
+输入：
+Activities 表：
++------------+-------------+
+| sell_date  | product     |
++------------+-------------+
+| 2020-05-30 | Headphone   |
+| 2020-06-01 | Pencil      |
+| 2020-06-02 | Mask        |
+| 2020-05-30 | Basketball  |
+| 2020-06-01 | Bible       |
+| 2020-06-02 | Mask        |
+| 2020-05-30 | T-Shirt     |
++------------+-------------+
+输出：
++------------+----------+------------------------------+
+| sell_date  | num_sold | products                     |
++------------+----------+------------------------------+
+| 2020-05-30 | 3        | Basketball,Headphone,T-shirt |
+| 2020-06-01 | 2        | Bible,Pencil                 |
+| 2020-06-02 | 1        | Mask                         |
++------------+----------+------------------------------+
+```
+
+>***Tip***
+>
+>```mysql
+>SELECT sell_date,
+>       COUNT(DISTINCT product) num_sold,
+>       GROUP_CONCAT(DISTINCT product ORDER BY product ASC) products
+>FROM Activities
+>GROUP BY sell_date
+>```
+>
+>**基本用法**
+>
+>假设你有一个表 `Orders`，其中包含订单号 (`order_id`) 和产品名称 (`product_name`) 列。你想按订单号将产品名称连接成一个逗号分隔的字符串：
+>
+>```
+>codeSELECT order_id, GROUP_CONCAT(product_name) AS products
+>FROM Orders
+>GROUP BY order_id;
+>```
+>
+>这将返回一个结果集，每个订单号对应一个产品名称的逗号分隔字符串。你可以在 `GROUP_CONCAT` 后面使用 `AS` 关键字为结果列指定一个别名。
+>
+>**更改分隔符**
+>
+>默认情况下，`GROUP_CONCAT` 使用逗号作为分隔符，但你可以通过使用 `SEPARATOR` 关键字来更改分隔符：
+>
+>```mysql
+>SELECT order_id, GROUP_CONCAT(product_name SEPARATOR ';') AS products
+>FROM Orders
+>GROUP BY order_id;
+>```
+>
+>在这个示例中，我们将分隔符从逗号更改为分号。
+>
+>**对结果进行排序**
+>
+>你可以使用 `ORDER BY` 子句对结果进行排序，然后使用 `GROUP_CONCAT` 连接排序后的值：
+>
+>```mysql
+>SELECT order_id, GROUP_CONCAT(product_name ORDER BY product_name) AS products
+>FROM Orders
+>GROUP BY order_id;
+>```
+>
+>这将按字母顺序对产品名称进行排序，然后连接它们。
+>
+>**去重复值**
+>
+>如果你希望去除重复的值，可以使用 `DISTINCT` 关键字：
+>
+>```mysql
+>SELECT order_id, GROUP_CONCAT(DISTINCT product_name) AS products
+>FROM Orders
+>GROUP BY order_id;
+>```
+>
+>这将仅包括唯一的产品名称。
+>
+>**控制连接的最大长度**
+>
+>默认情况下，`GROUP_CONCAT` 没有长度限制，但你可以使用 `MAX_LENGTH` 来控制连接的最大长度。如果你的连接字符串太长，它可能会被截断。
+>
+>```mysql
+>SELECT order_id, GROUP_CONCAT(product_name ORDER BY product_name SEPARATOR ',' MAX_LENGTH 1000) AS products
+>FROM Orders
+>GROUP BY order_id;
+>```
+
+
