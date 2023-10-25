@@ -1070,90 +1070,6 @@ Examinations table:
 
 
 
-
-
-## mysql 解题总结
-
-### 心得一
-
-解题思路：
-
-- 思路拆分
-  - 遇到mysql题可以先将要求和思路进行拆分，一步一步来做。大不了就是多写几行`sql`语句
-- 整合归纳
-  - 完成任务之后，我们可以进行优化和思考。是否有更好的解决办法
-
-摘自：[1393. 股票的资本损益](https://leetcode.cn/problems/capital-gainloss/)
-
->```
->输入：
->Stocks 表:
->+---------------+-----------+---------------+--------+
->| stock_name    | operation | operation_day | price  |
->+---------------+-----------+---------------+--------+
->| Leetcode      | Buy       | 1             | 1000   |
->| Corona Masks  | Buy       | 2             | 10     |
->| Leetcode      | Sell      | 5             | 9000   |
->| Handbags      | Buy       | 17            | 30000  |
->| Corona Masks  | Sell      | 3             | 1010   |
->| Corona Masks  | Buy       | 4             | 1000   |
->| Corona Masks  | Sell      | 5             | 500    |
->| Corona Masks  | Buy       | 6             | 1000   |
->| Handbags      | Sell      | 29            | 7000   |
->| Corona Masks  | Sell      | 10            | 10000  |
->+---------------+-----------+---------------+--------+
->输出：
->+---------------+-------------------+
->| stock_name    | capital_gain_loss |
->+---------------+-------------------+
->| Corona Masks  | 9500              |
->| Leetcode      | 8000              |
->| Handbags      | -23000            |
->+---------------+-------------------+
->```
-
->***Tip***
->
->从题目中可知，我们要计算 `sell` 和 `buy` 之间差值。那么，我们可以编写两条sql语句
->
->**buy**
->
->```mysql
->select stock_name,sum(price) as buy from stocks where operation = 'Buy' group by stocks.stock_name
->```
->
->**sell**
->
->```mysql
->select stock_name,sum(price) as sell from stocks where operation = 'Sell' group by stocks.stock_name
->```
->
->有了这些数据，我们计算差值就可以得出我们想要的结果：
->
->```mysql
->select s1.stock_name,(s2.sell - s1.buy) as capital_gain_loss  from
->(select stock_name,sum(price) as buy from stocks where operation = 'Buy' group by stocks.stock_name) s1,
->(select stock_name,sum(price) as sell from stocks where operation = 'Sell' group by stocks.stock_name) s2
->where s1.stock_name = s2.stock_name;
->```
->
->写到这样，就可以完成任务。但是，我们还需要考虑是否可以优化，或者是否有更好的方式。通过上面的思路，我可以进行变形。去分组判断类型即可。
->
->```mysql
->select  stock_name,(sum( if(operation='Sell' ,price,-price)) ) as capital_gain_loss
->from stocks
->group by stock_name;
->```
->
->优化完成，代码更加简洁。每一道mysql，都可以先做出来，在优化的方式。
-
-
-
-
-
-
-
-
 ## mysql 解题总结
 
 ### 心得一
@@ -1329,5 +1245,64 @@ Activities 表：
 >FROM Orders
 >GROUP BY order_id;
 >```
+
+
+
+## 正则表达
+
+**要求：** 被要求匹配一个字符串，应该最先想到写一个正则表达式模式进行匹配
+
+一个有效的电子邮件具有前缀名称和域，其中：
+
+1.  **前缀** 名称是一个字符串，可以包含字母（大写或小写），数字，下划线 `'_'` ，点 `'.'` 和/或破折号 `'-'` 。前缀名称 **必须** 以字母开头。
+2. **域** 为 `'@leetcode.com'` 。
+
+```diff
+Users 表:
++---------+-----------+-------------------------+
+| user_id | name      | mail                    |
++---------+-----------+-------------------------+
+| 1       | Winston   | winston@leetcode.com    |
+| 2       | Jonathan  | jonathanisgreat         |
+| 3       | Annabelle | bella-@leetcode.com     |
+| 4       | Sally     | sally.come@leetcode.com |
+| 5       | Marwan    | quarz#2020@leetcode.com |
+| 6       | David     | david69@gmail.com       |
+| 7       | Shapiro   | .shapo@leetcode.com     |
++---------+-----------+-------------------------+
+输出：
++---------+-----------+-------------------------+
+| user_id | name      | mail                    |
++---------+-----------+-------------------------+
+| 1       | Winston   | winston@leetcode.com    |
+| 3       | Annabelle | bella-@leetcode.com     |
+| 4       | Sally     | sally.come@leetcode.com |
++---------+-----------+-------------------------+
+```
+
+>***Tip***
+>
+>```mysql
+>SELECT user_id, name, mail
+>FROM Users
+>-- 请注意，还需要转义了`@`字符，因为它在某些正则表达式中具有特殊意义
+>WHERE mail REGEXP '^[a-zA-Z][a-zA-Z0-9_.-]*\\@leetcode\\.com$';
+>```
+>
+>正则表达式提供各种功能，以下是一些相关功能：
+>
+>- ^：表示一个字符串或行的开头
+>- [a-z]：表示一个字符范围，匹配从 a 到 z 的任何字符。
+>- [0-9]：表示一个字符范围，匹配从 0 到 9 的任何字符。
+>- [a-zA-Z]：这个变量匹配从 a 到 z 或 A 到 Z 的任何字符。请注意，你可以在方括号内指定的字符范围的数量没有限制，您可以添加想要匹配的其他字符或范围。
+>- [^a-z]：这个变量匹配不在 a 到 z 范围内的任何字符。请注意，字符 ^ 用来否定字符范围，它在方括号内的含义与它的方括号外表示开始的含义不同。
+>- [a-z]*：表示一个字符范围，匹配从 a 到 z 的任何字符 0 次或多次。
+>- [a-z]+：表示一个字符范围，匹配从 a 到 z 的任何字符 1 次或多次。
+>- .：匹配任意一个字符。
+>- \.：表示句点字符。请注意，反斜杠用于转义句点字符，因为句点字符在正则表达式中具有特殊含义。还要注意，在许多语言中，你需要转义反斜杠本身，因此需要使用\\.。
+>- $：表示一个字符串或行的结尾。
+>
+>摘自：[1517. 查找拥有有效邮箱的用户](https://leetcode.cn/problems/find-users-with-valid-e-mails/)
+
 
 
