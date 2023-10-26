@@ -1306,3 +1306,62 @@ Users 表:
 
 
 
+## 筛选空值
+
+**要求：** 在做多表查询时，可能出现某一些字段为`null`的值，我们可以使用 `is null`
+
+```diff
+输入:
+Visits
++----------+-------------+
+| visit_id | customer_id |
++----------+-------------+
+| 1        | 23          |
+| 2        | 9           |
+| 4        | 30          |
+| 5        | 54          |
+| 6        | 96          |
+| 7        | 54          |
+| 8        | 54          |
++----------+-------------+
+Transactions
++----------------+----------+--------+
+| transaction_id | visit_id | amount |
++----------------+----------+--------+
+| 2              | 5        | 310    |
+| 3              | 5        | 300    |
+| 9              | 5        | 200    |
+| 12             | 1        | 910    |
+| 13             | 2        | 970    |
++----------------+----------+--------+
+输出:
++-------------+----------------+
+| customer_id | count_no_trans |
++-------------+----------------+
+| 54          | 2              |
+| 30          | 1              |
+| 96          | 1              |
++-------------+----------------+
+```
+
+>***Tip***
+>
+>```mysql
+>SELECT
+>	visits.customer_id,
+>	count(*) AS count_no_trans 
+>FROM
+>	visits
+>	LEFT JOIN transactions ON visits.visit_id = transactions.visit_id 
+>WHERE
+>	 transactions.transaction_id IS NULL 
+>GROUP BY
+>	visits.customer_id
+>```
+>
+>在`where`如果直接查询 `transactions.transaction_id = null`是不合理的，因为`null`值无法直接比较
+>
+>摘自：[1581. 进店却未进行过交易的顾客](https://leetcode.cn/problems/customer-who-visited-but-did-not-make-any-transactions/)
+
+
+
