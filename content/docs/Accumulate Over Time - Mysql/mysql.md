@@ -1365,3 +1365,85 @@ Transactions
 
 
 
+
+
+## inner join > left join
+
+**要求：** 找出额高于 10000 的所有用户的名字和余额. 账户的余额等于包含该账户的所有交易的总和
+
+```diff
+输入：
+Users table:
++------------+--------------+
+| account    | name         |
++------------+--------------+
+| 900001     | Alice        |
+| 900002     | Bob          |
+| 900003     | Charlie      |
++------------+--------------+
+
+Transactions table:
++------------+------------+------------+---------------+
+| trans_id   | account    | amount     | transacted_on |
++------------+------------+------------+---------------+
+| 1          | 900001     | 7000       |  2020-08-01   |
+| 2          | 900001     | 7000       |  2020-09-01   |
+| 3          | 900001     | -3000      |  2020-09-02   |
+| 4          | 900002     | 1000       |  2020-09-12   |
+| 5          | 900003     | 6000       |  2020-08-07   |
+| 6          | 900003     | 6000       |  2020-09-07   |
+| 7          | 900003     | -4000      |  2020-09-11   |
++------------+------------+------------+---------------+
+输出：
++------------+------------+
+| name       | balance    |
++------------+------------+
+| Alice      | 11000      |
++------------+------------+
+解释：
+Alice 的余额为(7000 + 7000 - 3000) = 11000.
+Bob 的余额为1000.
+Charlie 的余额为(6000 + 6000 - 4000) = 8000.
+```
+
+>***Tip***
+>
+>```mysql
+>SELECT
+>	users.name,
+>	sum( Transactions.amount ) AS balance 
+>FROM
+>	Transactions
+>	Left  JOIN users ON users.account = Transactions.account 
+>GROUP BY
+>	Transactions.account 
+>HAVING
+>	balance > 10000
+>```
+>
+>```mysql
+>SELECT
+>	users.name,
+>	sum( Transactions.amount ) AS balance 
+>FROM
+>	Transactions
+>	inner  JOIN users ON users.account = Transactions.account 
+>GROUP BY
+>	Transactions.account 
+>HAVING
+>	balance > 10000
+>```
+>
+>两个相同的代码，inner的效率比left高上 100 ms。那为什么呢？因为：
+>
+>1. 数据量减少："INNER JOIN" 仅返回两个表之间匹配的行，而 "LEFT JOIN" 会返回左表的所有行，以及右表中匹配的行。因此， "LEFT JOIN" 可能需要处理更多的数据。
+>2. 索引效率：如果表上有适当的索引，"INNER JOIN" 可能能够更有效地查找匹配的行，因为它不需要在不匹配的行上执行额外的操作。而 "LEFT JOIN" 需要处理所有左表的行，不论是否有匹配。
+>3. 查询优化：数据库引擎通常会尝试优化查询，以提高性能。对于 "INNER JOIN"，优化器可能有更多的机会选择更有效的执行计划，因为它知道不需要处理左表中没有匹配的行。
+>4. 外键关系：如果你的表之间有外键关系，数据库引擎可能能够更好地优化 "INNER JOIN"，因为它可以利用外键的约束信息。
+>
+>尽管 "INNER JOIN" 在某些情况下可能更高效，但 "LEFT JOIN" 也是非常有用的，因为它可以用于检索左表的所有行，即使它们没有匹配。性能差异通常不会很大。
+>
+>摘自：[1587. 银行账户概要 II](https://leetcode.cn/problems/bank-account-summary-ii/)
+
+
+
