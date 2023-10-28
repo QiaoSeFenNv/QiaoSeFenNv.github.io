@@ -1367,7 +1367,7 @@ Transactions
 
 
 
-## inner join > left join
+## inner join > left join (Sometime)
 
 **要求：** 找出额高于 10000 的所有用户的名字和余额. 账户的余额等于包含该账户的所有交易的总和
 
@@ -1444,6 +1444,83 @@ Charlie 的余额为(6000 + 6000 - 4000) = 8000.
 >尽管 "INNER JOIN" 在某些情况下可能更高效，但 "LEFT JOIN" 也是非常有用的，因为它可以用于检索左表的所有行，即使它们没有匹配。性能差异通常不会很大。
 >
 >摘自：[1587. 银行账户概要 II](https://leetcode.cn/problems/bank-account-summary-ii/)
+
+
+
+
+
+## 排序中也有排序
+
+**要求：** 返回的结果表根据某一个字段进行 的 **降序** 排序，若相同则按 另一个字段进行的 **升序** 排序。
+
+```diff
+Users 表：
++---------+-----------+
+| user_id | user_name |
++---------+-----------+
+| 6       | Alice     |
+| 2       | Bob       |
+| 7       | Alex      |
++---------+-----------+
+
+Register 表：
++------------+---------+
+| contest_id | user_id |
++------------+---------+
+| 215        | 6       |
+| 209        | 2       |
+| 208        | 2       |
+| 210        | 6       |
+| 208        | 6       |
+| 209        | 7       |
+| 209        | 6       |
+| 215        | 7       |
+| 208        | 7       |
+| 210        | 2       |
+| 207        | 2       |
+| 210        | 7       |
++------------+---------+
+输出：
++------------+------------+
+| contest_id | percentage |
++------------+------------+
+| 208        | 100.0      |
+| 209        | 100.0      |
+| 210        | 100.0      |
+| 215        | 66.67      |
+| 207        | 33.33      |
++------------+------------+
+解释：
+所有用户都注册了 208、209 和 210 赛事，因此这些赛事的注册率为 100% ，我们按 contest_id 的降序排序加入结果表中。
+Alice 和 Alex 注册了 215 赛事，注册率为 ((2/3) * 100) = 66.67%
+Bob 注册了 207 赛事，注册率为 ((1/3) * 100) = 33.33%
+```
+
+> ***Tip***
+>
+> 这是一个简单题，想说的知识点是一个排序中排序的问题。在`order by` 中也存在优先级，如果先写的排序在前，则优先级高
+>
+> ```mysql
+> select contest_id, round((count(*) / (select count(*) from users) )*100,2 ) as percentage
+> from register
+> group by contest_id
+> order by percentage desc, contest_id asc
+> ```
+>
+> `percentage` 的 **降序** 排序，若相同则按 `contest_id` 的 **升序** 排序。
+>
+> 反之：
+>
+> ```
+> select contest_id, round((count(*) / (select count(*) from users) )*100,2 ) as percentage
+> from register
+> group by contest_id
+> order by  contest_id asc， percentage desc
+> ```
+>
+> 升序，在根据 `percentage` 降序
+>
+> 摘自：[1633. 各赛事的用户注册率](https://leetcode.cn/problems/percentage-of-users-attended-a-contest/)
 
 
 
