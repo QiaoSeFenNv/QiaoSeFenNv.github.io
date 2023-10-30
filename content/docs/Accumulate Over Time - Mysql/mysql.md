@@ -1524,3 +1524,47 @@ Bob 注册了 207 赛事，注册率为 ((1/3) * 100) = 33.33%
 
 
 
+
+
+## mysql字符串函数
+
+**要求：** 对某一列的值首字母大写
+
+```diff
+输入：
+Users table:
++---------+-------+
+| user_id | name  |
++---------+-------+
+| 1       | aLice |
+| 2       | bOB   |
++---------+-------+
+输出：
++---------+-------+
+| user_id | name  |
++---------+-------+
+| 1       | Alice |
+| 2       | Bob   |
++---------+-------+
+```
+
+>***Tip***
+>
+>```mysql
+>select user_id, CONCAT(UPPER(left(name, 1)), LOWER(right(name, length(name) - 1))) as name
+>from Users
+>order by user_id
+>```
+>
+>这道题考察mysql字符串函数相关的内容:
+>
+>- CONCAT() 函数：将多个字符串拼接
+>- LEFT(str, length) 函数：从左开始截取字符串，length 是截取的长度。
+>- UPPER(str) ：将字符串中所有字符转为大写
+>- LOWER(str) ：将字符串中所有字符转为小写
+>-  SUBSTRING(str, begin, end) ： 截取字符串，end 不写默认为空
+>
+>摘自：[1667. 修复表中的名字](https://leetcode.cn/problems/fix-names-in-a-table/)
+
+
+
