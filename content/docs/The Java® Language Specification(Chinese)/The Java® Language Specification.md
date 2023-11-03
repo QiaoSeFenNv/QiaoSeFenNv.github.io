@@ -524,7 +524,7 @@ open         record     transitive   with
    - 换行符应该使用'\n'的转义序列，回车符应该使用'\r'的转义序列。
 8. 在Java中，字符字面值始终表示一个字符，不像C和C++中可能表示多个字符。
 
-### 3.10.5。字符串文字
+### 3.10.5. 字符串文字
 
 *字符串文本*由零个或多个组成 用双引号括起来的字符。换行符等字符 可以用转义序列表示。
 
@@ -535,9 +535,200 @@ open         record     transitive   with
 - 所有相同内容的字符串字面值引用相同的String实例，**这是通过字符串字面值的"interning"实现的**。
 - 字符串字面值以及常量表达式的值都会在编译时进行计算和共享，以减少内存使用。
 
-### 3.10.6。文本块
+```java
+package testPackage;
+class Test {
+    public static void main(String[] args) {
+        String hello = "Hello", lo = "lo";
+        System.out.println(hello == "Hello");
+        System.out.println(Other.hello == hello);
+        System.out.println(other.Other.hello == hello);
+        System.out.println(hello == ("Hel"+"lo"));
+        System.out.println(hello == ("Hel"+lo));
+        System.out.println(hello == ("Hel"+lo).intern());
+    }
+}
+class Other { static String hello = "Hello"; }
+```
+
+```wiki
+true
+true
+true
+true
+false
+true
+```
+
+>- 同一类和包中的字符串文本 表示对同一对象的引用 （[第 4.3.1 节](https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.3.1)）。`String`
+>- 同一类中不同类中的字符串文字 package 表示对同一对象的引用。`String`
+>- 不同类中的字符串文字 不同的包同样表示对同一对象的引用。`String`
+>- 从常量表达式连接的字符串 （[§15.29](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.29)） 在编译时计算，并且 然后将它们视为字面意思。
+>- **在运行时通过串联计算的字符串 是新创建的，因此是不同的。**
+>- 显式嵌套计算的结果 string 是与任何预先存在的字符串相同的对象 具有相同内容的文字。`String`
+
+
+
+### 3.10.6. 文本块
+
+*文本块*由零个或多个字符组成 由打开和关闭分隔符括起来。
+
+```Java
+class Test {
+   public static void main(String[] args) {
+        // The six characters w i n t e r
+        String season = """
+                        winter""";
+
+        // The seven characters w i n t e r LF
+        String period = """
+                        winter
+                        """;
+
+        // The ten characters H i , SP " B o b " LF
+        String greeting = """
+                          Hi, "Bob"
+                          """;
+
+        // The eleven characters H i , LF SP " B o b " LF
+        String salutation = """
+                            Hi,
+                             "Bob"
+                            """;        
+
+        // The empty string (zero length)
+        String empty = """
+                       """;      
+
+        // The two characters " LF
+        String quote = """
+                       "
+                       """; 
+
+        // The two characters \ LF
+        String backslash = """
+                           \\
+                           """;  
+    }
+}
+```
+
+>文本块的类型始终为String类型。并且开始分隔符是以`"""`开始，由一个**换行符**（必须存在）、多个控制、制表符、表单源字符以及末尾的`"""`
+>
+>使用转义序列 和 分别表示换行符和双引号字符， 允许在文本块中使用
+>
+>使用该特性需要 Java Level15 以上
+
+文本块总是引用*类的同一*实例。这是因为 `文本块`- 或者更一般地说，是常量值的字符串表达式。
+
+```java
+        System.out.println("ab" + """
+                        \tcde
+                          """);
+//输出 ab	cde
+        String cde = """
+             abcde""".substring(2);
+//输出 cde
+        String math = """
+              1+1 equals \
+              """ + String.valueOf(2);
+//输出 1+1 equals 2
+```
+
 ### 3.10.7. 转义序列
-### 3.10.8。空文字
-### 3.11. 分离器
-### 3.12. 运营商
+
+在字符文本、字符串文本和文本块中,*转义序列*允许表示一些非图形字符，而无需使用Unicode转义。
+
+```F#
+\b：退格字符（Unicode \u0008）
+\s：空格字符（Unicode \u0020）
+\t：水平制表符（Unicode \u0009）
+\n：换行字符（Unicode \u000a）
+\f：换行符字符（Unicode \u000c）
+\r：回车符字符（Unicode \u000d）
+"：双引号字符（Unicode \u0022）
+'：单引号字符（Unicode \u0027）
+\：反斜杠字符
+```
+
+```java
+String backspace = "This is a backspace: \b";
+String space = "This is a space: \s";
+String tab = "This is a tab: \t";
+String newline = "This is a newline: \n";
+String formFeed = "This is a form feed: \f";
+String carriageReturn = "This is a carriage return: \r";
+String doubleQuote = "This is a double quote: \"";
+String singleQuote = "This is a single quote: '";
+String backslash = "This is a backslash: \\";
+String octalEscape = "This is an octal escape: \101";
+String multilineText = """
+    This is a long piece of text that spans multiple lines and is \
+    much easier to read thanks to the line continuation escape.
+    """;
+```
+
+>1. 八进制转义序列：
+>   - 八进制转义序列由反斜杠后面跟着一个或多个八进制数字组成，用于表示特定的字符。
+>   - 八进制数字范围从0到7。
+>   - 八进制转义序列的范围为\000到\377（对应Unicode \u0000 到 \u00ff）。
+>2. 行继续转义：
+>   - 行继续转义序列用于表示多行文本块的行继续，以使文本块更易读。
+>   - 行继续转义序列由反斜杠和换行符组成。
+>3. 行继续转义序列可以出现在文本块中，但不能出现在字符文本或字符串文本中，因为每个都不允许LineTerminator（行终止符）。
+
+
+
+### 3.10.8. 空文字
+
+- NullLiteral（null 字面量）的语法非常简单，只需使用关键字 `null` 即可。
+
+- null 字面量永远属于 null 类型，这是 Java 中的一个引用类型。
+
+- 当您将一个变量或表达式初始化为 `null` 时，它表示这个变量或表达式不引用任何对象。
+
+- null 字面量通常用于初始化引用变量，以表示它们不指向任何对象。例如：
+
+  ```java
+  String str = null; // 初始化 str 为 null
+  ```
+
+- 当您尝试使用一个空引用来访问对象的成员（例如方法或字段），将会引发 `NullPointerException` 异常，因此在使用引用之前，通常需要检查它是否为 null。
+
+- null 字面量在编程中用于表示缺少对象或尚未分配对象的情况，以便编写更灵活的代码。
+
+- null 字面量不同于空字符串 `""` 或数字 `0`，它们分别表示空字符串和零值。
+
+- 在 Java 中，null 是一个关键字，不是标识符，因此不能用作变量名或方法名。
+
+
+
+### 3.11. 分隔符
+
+由 ASCII 字符组成的 12 个标记是 *分隔符*（标点符号）。
+
+分隔符：
+
+（其中之一）
+
+```
+(   )   {   }   [   ]   ;   ,   .   ...   @   ::
+```
+
+
+
+### 3.12. 操作符
+
+38个操作符， 由 ASCII 字符组成的*是运算符*。
+
+操作符：
+
+（其中之一）
+
+```
+=   >   <   !   ~   ?   :   ->
+==  >=  <=  !=  &&  ||  ++  --
++   -   *   /   &   |   ^   %   <<   >>   >>>
++=  -=  *=  /=  &=  |=  ^=  %=  <<=  >>=  >>>=
+```
 
