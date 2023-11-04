@@ -343,9 +343,9 @@ _ (underscore)
 
 ```F#
 exports      opens      requires     uses   yield
-module       permits    sealed       var         
-non-sealed   provides   to           when        
-open         record     transitive   with  
+module       permits    sealed       var
+non-sealed   provides   to           when
+open         record     transitive   with
 ```
 
 >关键字`const`和`goto`虽然保留，但当前未在Java中使用。这是为了帮助Java编译器在出现这些C++关键字的情况下提供更好的错误消息。
@@ -594,21 +594,21 @@ class Test {
         String salutation = """
                             Hi,
                              "Bob"
-                            """;        
+                            """;
 
         // The empty string (zero length)
         String empty = """
-                       """;      
+                       """;
 
         // The two characters " LF
         String quote = """
                        "
-                       """; 
+                       """;
 
         // The two characters \ LF
         String backslash = """
                            \\
-                           """;  
+                           """;
     }
 }
 ```
@@ -732,3 +732,197 @@ String multilineText = """
 +=  -=  *=  /=  &=  |=  ^=  %=  <<=  >>=  >>>=
 ```
 
+
+
+## 4.类型、值和变量
+
+Java 编程语言是 *一种静态类型语言*，这意味着 每个变量和每个表达式都有一个已知的类型 编译时。
+
+>这意味着在编译时每个变量和表达式都必须具有已知的类型。
+>
+>每个变量都需要显式地声明其数据类型，编译器会检查类型是否匹配，并在编译时进行类型检查。
+
+### 4.1. 类型和值的种类
+
+有 Java 编程语言中的两种类型：
+
+- 原始类型：包括整数类型（如int、byte、short、long）、浮点类型（如float、double）、字符类型（char）和布尔类型（boolean）。原始类型的变量存储的是实际的数据值。
+- 引用类型：包括类（class）、接口（interface）、数组（array）、枚举（enum）等。引用类型的变量存储的是对对象的引用，而不是对象本身。对象通常存储在堆内存中，而引用存储在栈内存中。
+- **null类型** 是一个特殊的类型，通常用于表示一个引用类型的变量没有引用任何对象。在Java中，任何引用类型的变量都可以赋予null值，表示它不引用任何对象。
+
+### 4.2. 原始类型和值
+
+#### 4.2.1. 整数类型和值
+
+- 对于`byte`：范围为-128到127，包括边界值。`byte`是一个8位数据类型。
+- 对于`short`：范围为-32768到32767，包括边界值。`short`是一个16位数据类型。
+- 对于`int`：范围为-2147483648到2147483647，包括边界值。`int`是一个32位数据类型。
+- 对于`long`：范围为-9223372036854775808到9223372036854775807，包括边界值。`long`是一个64位数据类型。
+- 对于`char`：范围为'\u0000'到'\uffff'，包括边界值，对应整数值从0到65535。`char`表示一个16位Unicode字符。
+
+#### 4.2.2. 整数运算
+
+1. 比较操作符，产生布尔结果：
+   - `<`、`<=`、`>`、`>=` 用于数字比较。
+   - `==` 和 `!=` 用于数字相等比较。
+2. 数值操作符，产生 int 或 long 结果：
+   - 一元加法和减法操作符：`+` 和 `-`。
+   - 乘法操作符：`*`、`/`、`%`。
+   - 加法操作符：`+`、`-`。
+   - 自增操作符：`++`（前缀和后缀）。
+   - 自减操作符：`--`（前缀和后缀）。
+   - 带符号和无符号位移操作符：`<<`、`>>`、`>>>`。
+   - 按位非操作符：`~`。
+   - 整数位运算操作符：`&`、`^` 和 `|`。
+   - 条件操作符：`? :`。
+3. 这些操作符的行为由操作数的类型决定：
+   - 如果任何操作数是 long 类型，操作将以64位精度执行，结果将是 long 类型。
+   - 如果一个或两个操作数不是 long 类型，数值提升将使它们扩展为 int。
+   - 整数操作符没有溢出或下溢指示。
+4. 整数操作符可以在以下条件下抛出异常：
+   - 如果需要对 null 引用进行拆箱转换，将会抛出 NullPointerException。
+   - 如果整数除法操作符 `/` 和求余操作符 `%` 的右操作数为零，则可能抛出 ArithmeticException。
+   - 如果需要进行装箱转换，但没有足够的内存可用来执行转换，可能会出现 OutOfMemoryError。
+
+```java
+class Test {
+    public static void main(String[] args) {
+        int i = 1000000;
+        System.out.println(i * i);
+        long l = i;
+        System.out.println(l * l);
+        System.out.println(20296 / (l - i));
+    }
+}
+//-727379968
+//1000000000000
+//Exception in thread "main" java.lang.ArithmeticException: / by zero
+//	at com.qiaose.fourAndOne.four.main(four.java:10)
+```
+
+
+
+#### 4.2.3. 浮点类型和值
+
+1. Java中有两种浮点类型：`float`和`double`，分别对应32位和64位IEEE 754浮点格式。从Java SE 15开始，采用2019年版的IEEE 754标准。
+
+2. 浮点类型包括正数、负数、零、正无穷大、负无穷大和特殊的NaN（Not-a-Number）值。NaN用于表示某些无效操作，例如将0.0除以0.0。在Java中，NaN值可以用`Float.NaN`和`Double.NaN`常量表示。
+
+   ```java
+   double result = 0.0 / 0.0;
+   System.out.println(result); // 输出 NaN
+   ```
+
+3. IEEE 754标准允许每个NaN值具有多个不同的NaN位模式，但Java通常将它们处理为单一规范值。
+
+   >IEEE 754标准允许每种二进制32和二进制64浮点格式中的NaN值具有多个不同的NaN位模式。但是，Java SE平台通常将给定浮点类型的NaN值视为单一的规范值，因此本规范通常将任意NaN值视为规范值。
+
+4. 正零和负零相等，所以表达式0.0==-0.0的结果为true，表达式0.0>-0.0的结果为false。其他操作可以区分正零和负零；例如，1.0/0.0的值为正无穷大，而1.0/-0.0的值为负无穷大。
+
+   NaN是无序的，因此：
+
+   - 数值比较运算符<、<=、>和>=如果其中一个或两个操作数为NaN，则返回false（§15.20.1）。
+   - 特别是，如果x或y为NaN，则(x<y) == !(x>=y)为false。
+   - 等号运算符==如果其中一个操作数为NaN，则返回false。
+   - 不等号运算符!=如果其中一个操作数为NaN，则返回true（§15.21.1）。
+   - 特别是，x!=x为true当且仅当x为NaN。
+
+#### 4.2.4. 浮点运算
+
+1. 如果二元运算符的至少一个操作数是浮点类型，那么该操作将是浮点操作，即使另一个操作数是整数也一样。
+2. 如果至少一个操作数是double类型的数值运算符，那么操作将使用64位浮点算术执行，操作的结果将是double类型的值。如果另一个操作数不是double，则会通过数值提升（numeric promotion）将其转换为double类型。
+3. 至少一个操作数是float类型，操作将使用32位浮点算术执行，操作的结果将是float类型的值。如果另一个操作数不是float，则会通过数值提升将其转换为float类型。
+4. 任何浮点类型的值都可以转换为任何数值类型。不允许浮点类型与布尔类型之间进行强制类型转换。
+5. 浮点运算符可能会因以下原因抛出异常：
+   - 任何浮点运算符如果需要对null引用进行拆箱转换（unboxing conversion）时，可能会抛出NullPointerException。
+   - 自增和自减运算符++和--在需要进行装箱转换（boxing conversion）时，如果内存不足以执行转换，则可能会抛出OutOfMemoryError。
+
+```java
+rint("overflow produces infinity: ");
+        System.out.println(d + "*10==" + d*10);
+        // An example of gradual underflow:
+        d = 1e-305 * Math.PI;
+        System.out.print("gradual underflow: " + d + "\n   ");
+        for (int i = 0; i < 4; i++)
+            System.out.print(" " + (d /= 100000));
+        System.out.println();
+        // An example of NaN:
+        System.out.print("0.0/0.0 is Not-a-Number: ");
+        d = 0.0/0.0;
+        System.out.println(d);
+        // An example of inexact results and rounding:
+        System.out.print("inexact results with float:");
+        for (int i = 0; i < 100; i++) {
+            float z = 1.0f / i;
+            if (z * i != 1.0f)
+                System.out.print(" " + i);
+        }
+        System.out.println();
+        // Another example of inexact results and rounding:
+        System.out.print("inexact results with double:");
+        for (int i = 0; i < 100; i++) {
+            double z = 1.0 / i;
+            if (z * i != 1.0)
+                System.out.print(" " + i);
+        }
+        System.out.println();
+        // An example of cast to integer rounding:
+        System.out.print("cast to int rounds toward 0: ");
+        d = 12345.6;
+        System.out.println((int)d + " " + (int)(-d));
+    }
+}
+```
+
+结果：
+
+```java
+overflow produces infinity: 1.0E308*10==Infinity
+gradual underflow: 3.141592653589793E-305
+    3.1415926535898E-310 3.141592653E-315 3.142E-320 0.0
+0.0/0.0 is Not-a-Number: NaN
+inexact results with float: 0 41 47 55 61 82 83 94 97
+inexact results with double: 0 49 98
+cast to int rounds toward 0: 12345 -12345
+```
+
+#### 4.2.5. 类型boolean和布尔值
+
+- 布尔运算符有关于关系运算符（==，!=），逻辑非运算符（!），逻辑运算符（&，|，^），条件与或运算符（&&，||），条件运算符（? :)，和字符串连接运算符（+）。
+
+- 值可以通过字符串转换（String.valueOf）转换为布尔值。
+
+- 值可以通过类型转换（强制转换）转换为布尔类型。
+
+>1. 字符串转换：使用`String.valueOf`或者字符串的比较操作等方法将值转换为布尔类型时，需要确保字符串的内容符合布尔值的语义。通常，字符串"true"（不区分大小写）会被转换为`true`，而字符串"false"会被转换为`false`。其他字符串内容可能会引发`IllegalArgumentException`或返回`false`。
+>2. 类型转换：使用强制类型转换将值转换为布尔类型时，需要确保值的类型与布尔类型兼容。通常，非零整数值会被转换为`true`，而零会被转换为`false`。引用类型（对象引用）通常会被转换为`true`，除非引用为`null`，此时会被转换为`false`。确保转换的值在布尔上下文中具有明确的含义。
+
+
+
+4.3. 参考类型和值
+4.3.1. 对象
+4.3.2. 班上Object
+4.3.3. 班上String
+4.3.4. 当引用类型相同时
+4.4. 类型变量
+4.5. 参数化类型
+4.5.1. 参数化类型的类型参数
+4.5.2. 参数化类型的成员和构造函数
+4.6. 类型擦除
+4.7. 可具体化的类型
+4.8. 原始类型
+4.9. 交叉口类型
+4.10. 子类型化
+4.10.1. 原始类型之间的子类型化
+4.10.2. 类和接口类型之间的子类型化
+4.10.3. 数组类型之间的子类型化
+4.10.4. 最小上界
+4.10.5。类型投影
+4.11. 使用类型的地方
+4.12. 变量
+4.12.1. 原始类型变量
+4.12.2. 引用类型变量
+4.12.3. 变量的种类
+4.12.4. final变量
+4.12.5。变量的初始值
+4.12.6。类型、类和接口
