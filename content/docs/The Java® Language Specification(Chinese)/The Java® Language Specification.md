@@ -360,7 +360,7 @@ open         record     transitive   with
 - 该字符序列前后没有紧邻JavaLetterOrDigit字符（Java字母、Java数字）。
 
 ### 3.10. 文字
-### 3.10.1. 整数文字
+#### 3.10.1. 整数文字
 
 1. 十进制整数字面值（DecimalIntegerLiteral）
 
@@ -423,7 +423,7 @@ open         record     transitive   with
 >3. **二进制（Binary）：**
 >   - `int`类型的最大值为0b01111111111111111111111111111111，最小值为0b10000000000000000000000000000000。如果一个二进制整数值大于0b01111111111111111111111111111111或小于0b10000000000000000000000000000000，同样会发生整数溢出，重新从最小值或最大值开始计算
 
-### 3.10.2. 浮点文字
+#### 3.10.2. 浮点文字
 
 *浮点文字*包含以下部分： 整数部分、小数点或十六进制点（由 ASCII 句点字符）、分数部分、指数和类型后缀。
 
@@ -488,7 +488,7 @@ open         record     transitive   with
 >//双精度IEEE 754表示：1100000000011111000000000000000000000000000000000000000000000000
 >```
 
-### 3.10.3. 布尔文字
+#### 3.10.3. 布尔文字
 
 1. 布尔类型：
    - 布尔类型是Java中的一种基本数据类型，它只有两个可能的值，即true和false。
@@ -500,7 +500,7 @@ open         record     transitive   with
    - 布尔字面值的类型始终是boolean类型，这是Java语言规范中规定的。
    - 这意味着，无论你在代码中使用true还是false，它们都属于boolean类型，不需要显式地指定类型。
 
-### 3.10.4. 字符文字
+#### 3.10.4. 字符文字
 
 1. 字符字面值的表示：
    - 字符字面值可以用字符或转义序列表示，它们需要被封装在ASCII单引号中，即`'`。
@@ -524,7 +524,7 @@ open         record     transitive   with
    - 换行符应该使用'\n'的转义序列，回车符应该使用'\r'的转义序列。
 8. 在Java中，字符字面值始终表示一个字符，不像C和C++中可能表示多个字符。
 
-### 3.10.5. 字符串文字
+#### 3.10.5. 字符串文字
 
 *字符串文本*由零个或多个组成 用双引号括起来的字符。换行符等字符 可以用转义序列表示。
 
@@ -569,7 +569,7 @@ true
 
 
 
-### 3.10.6. 文本块
+#### 3.10.6. 文本块
 
 *文本块*由零个或多个字符组成 由打开和关闭分隔符括起来。
 
@@ -635,7 +635,7 @@ class Test {
 //输出 1+1 equals 2
 ```
 
-### 3.10.7. 转义序列
+#### 3.10.7. 转义序列
 
 在字符文本、字符串文本和文本块中,*转义序列*允许表示一些非图形字符，而无需使用Unicode转义。
 
@@ -679,7 +679,7 @@ String multilineText = """
 
 
 
-### 3.10.8. 空文字
+#### 3.10.8. 空文字
 
 - NullLiteral（null 字面量）的语法非常简单，只需使用关键字 `null` 即可。
 
@@ -703,7 +703,7 @@ String multilineText = """
 
 
 
-### 3.11. 分隔符
+#### 3.11. 分隔符
 
 由 ASCII 字符组成的 12 个标记是 *分隔符*（标点符号）。
 
@@ -717,7 +717,7 @@ String multilineText = """
 
 
 
-### 3.12. 操作符
+#### 3.12. 操作符
 
 38个操作符， 由 ASCII 字符组成的*是运算符*。
 
@@ -899,16 +899,362 @@ cast to int rounds toward 0: 12345 -12345
 
 
 
-4.3. 参考类型和值
-4.3.1. 对象
-4.3.2. 班上Object
-4.3.3. 班上String
-4.3.4. 当引用类型相同时
-4.4. 类型变量
-4.5. 参数化类型
-4.5.1. 参数化类型的类型参数
-4.5.2. 参数化类型的成员和构造函数
-4.6. 类型擦除
+### 4.3. 引用类型和值
+
+- 引用类型分为四种种类：类类型（Class Types），接口类型（Interface Types），类型变量（Type Variables），数组类型（Array Types）。
+
+- 如果在类或接口类型中出现类型参数，那么它就是一个参数化类型（Parameterized Type）。参数化类型是一种带有类型参数的类或接口类型。
+
+  ```java
+  class List<T> {
+      private T[] elements;
+  
+      public List(int size) {
+          elements = (T[]) new Object[size];
+      }
+  
+      public void add(T element) {
+          // 添加元素的逻辑
+      }
+  
+      public T get(int index) {
+          // 获取元素的逻辑
+          return elements[index];
+      }
+  }
+  
+  ```
+
+  >在上面的代码中，`List<T>` 是一个参数化类型，`<T>` 表示类型参数。这意味着你可以在创建 `List` 实例时指定具体的数据类型，例如 `List<Integer>` 或 `List<String>`。这使得 `List` 可以根据需要存储不同类型的元素，而无需为每种数据类型创建不同的类。
+
+- 标识符在类或接口类型中可以被分类为包名（Package Name）或类型名（Type Name）。如果一个类或接口类型以T.id的形式出现（可以后跟类型参数），**那么id必须是T的可访问成员类型的简单名称**。成员类型可以是嵌套在T中的类或接口类型。这个类或接口类型表示T的成员类型。
+
+  ```java
+  class Outer {
+      class Inner {
+          void innerMethod() {
+              System.out.println("Inner method");
+          }
+      }
+  }
+  
+  public class Main {
+      public static void main(String[] args) {
+          Outer outer = new Outer();
+          Outer.Inner inner = outer.new Inner();
+          inner.innerMethod();
+      }
+  }
+  ```
+
+  
+
+#### 4.3.1. 对象
+
+在Java中，对象是类实例或数组的实例。
+
+在Java中，可以使用以下操作符处理引用到对象的引用:
+
+- **Field access:** 通过限定名（qualified name）或字段访问表达式（field access expression），可以访问对象的字段（类似成员变量）
+- **Method invocation:** 可以调用对象的方法，这是通过使用点号（.）来访问方法和传递参数
+- **Cast operator:** 可以使用强制类型转换操作符来将引用从一种类型转换为另一种类型，比如从子类引用到父类引用
+- **String concatenation operator:** 可以使用+操作符来将字符串和引用连接起来。如果其中一个操作数是String，另一个操作数将隐式地通过调用被引用对象的`toString`方法转换为String（如果引用或`toString`的结果是null，将使用字符串"null"），然后生成一个新的String，它是两个字符串的连接
+- **Instanceof operator:** 通过`instanceof`操作符，可以检查对象是否是特定类型的实例
+- **Reference equality operators:** 使用`==`和`!=`操作符可以检查两个引用是否引用同一个对象（不过一般不推荐，通过我们会重写equals方法来进行两个对象的判断）
+- **Conditional operator:** 使用`? :`条件运算符来根据条件选择不同的值
+
+>可以有多个引用指向同一个对象。如果两个变量包含对同一对象的引用，那么可以使用一个变量的引用修改对象的状态，然后可以通过另一个变量中的引用观察到已更改的状态。
+
+
+
+#### 4.3.2. Object
+
+Object类中定义的主要方法包括：
+
+1. **clone方法:** 用于创建对象的副本。通过调用该方法，可以复制一个对象，以便获得一个具有相同状态的新对象。
+2. **equals方法:** 定义了对象的相等性概念，它基于值而不是引用进行比较。通过覆盖这个方法，可以自定义两个对象何时被认为是相等的。
+3. **finalize方法:** 在对象销毁之前（垃圾回收时）运行。它允许在对象被销毁之前执行一些清理或资源释放操作。
+4. **getClass方法:** 用于获取表示对象所属类的Class对象。每个引用类型都有一个对应的Class对象，它可以用于获取类的完全限定名称、成员信息、直接超类信息以及它实现的任何接口信息。
+5. **hashCode方法:** 通常与equals方法一起使用，对于在像java.util.HashMap这样的哈希表中查找对象非常有用。hashCode方法用于返回对象的哈希码，以便在哈希表中进行快速查找。
+6. **wait, notify和notifyAll方法:** 用于多线程编程中的并发控制。这些方法允许线程在等待某些条件成立时进入休眠状态，并在其他线程满足这些条件时唤醒它们。
+7. **toString方法:** 返回对象的字符串表示。通常，这个方法会返回一个包含对象状态信息的字符串，以便于调试和日志记录。
+
+#### 4.3.3. String
+
+**String类**表示Unicode码点的序列，它的特点包括：
+
+- String对象的值是**常量**，一旦创建，它的值不能被修改。这意味着字符串是不可变的。
+- 字符串字面值（String literals）和文本块（text blocks）都是对String类实例的引用。这些实例用于存储字符串的内容。
+- 字符串拼接操作符+（string concatenation operator +）用于将多个字符串连接在一起，创建一个新的String对象。如果拼接操作的结果不是常量表达式，它将隐式创建一个新的String对象。
+
+
+
+#### 4.3.4. 当引用类型相同时
+
+如果出现以下情况，则两个引用类型*是相同的编译时类型* 它们在与 相同的模块， 并且它们具有相同的二进制名称， 并且它们的类型参数（如果有）是相同的，应用此 递归定义。
+
+当两种引用类型相同时，有时称它们为 *同一类*或*相同 接口*。
+
+在运行是，即使是有着相同二进制名称的多个引用类型。但是，由于由不同的类装入器同时加载时，这些类型可能或 不能表示相同的类型声明。即使两种这样的类型确实如此 表示相同的类型声明，它们被认为是不同的。
+
+如果存在一下情况，我们则认为它们时相同的运行时类型：
+
+- 它们都是类或两种接口类型，由 相同的类装入器，并具有相同的二进制名称
+- 它们都是数组类型，它们的组件类型是 相同的运行时类型 
+
+
+
+### 4.4. 类型变量
+
+*类型变量*是使用的非限定标识符 作为类、接口、方法和构造函数体中的类型。
+
+>当你创建一个泛型类、接口、方法或构造函数时，你可以定义一个类型参数（类型变量），并在这些泛型实体的内部使用它，以表示未知的类型。
+
+**示例 1: 泛型类**
+
+```java
+class Box<T> {
+    private T value;
+    
+    public Box(T value) {
+        this.value = value;
+    }
+    
+    public T getValue() {
+        return value;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Box<Integer> intBox = new Box<>(42);
+        Box<String> strBox = new Box<>("Hello, Java!");
+        
+        System.out.println(intBox.getValue()); // 输出: 42
+        System.out.println(strBox.getValue()); // 输出: Hello, Java!
+    }
+}
+```
+
+在这个示例中，`Box` 类使用类型参数 `T` 来表示一个通用的盒子，可以存储不同类型的值。
+
+**示例 2: 泛型方法**
+
+```java
+class MathUtils {
+    public static <T extends Number> double add(T a, T b) {
+        return a.doubleValue() + b.doubleValue();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        int sumInt = MathUtils.add(3, 5);
+        double sumDouble = MathUtils.add(2.5, 4.7);
+        
+        System.out.println(sumInt);    // 输出: 8.0
+        System.out.println(sumDouble); // 输出: 7.2
+    }
+}
+```
+
+在这个示例中，`MathUtils` 类中的 `add` 方法使用类型参数 `T`，并通过限制 `T` 必须是 `Number` 或其子类来确保输入的参数是数字类型。
+
+Java中的类型参数和界限（bounds）的使用：
+
+```java
+package TypeVarMembers;
+
+class C { 
+    public    void mCPublic()    {}
+    protected void mCProtected() {} 
+              void mCPackage()   {}
+    private   void mCPrivate()   {} 
+} 
+
+interface I {
+    void mI();
+}
+
+class CT extends C implements I {
+    public void mI() {}
+}
+
+class Test {
+    <T extends C & I> void test(T t) { 	
+        t.mI();           // OK
+        t.mCPublic();     // OK 
+        t.mCProtected();  // OK 
+        t.mCPackage();    // OK
+        t.mCPrivate();    // Compile-time error
+    } 
+}
+```
+
+>1. `C` 类定义了四个不同的方法，分别具有不同的访问修饰符（public、protected、package-private、private）。
+>2. `I` 接口定义了一个名为 `mI` 的抽象方法。
+>3. `CT` 类继承自 `C` 类并实现了 `I` 接口，因此它继承了 `C` 类的方法和实现了 `I` 接口的方法。
+>4. 在 `Test` 类中，有一个泛型方法 `test`，它接受一个类型参数 `T`，并且要求 `T` 必须是 `C` 类和 `I` 接口的子类型，即 `T extends C & I`。
+>5. 在 `test` 方法中，可以调用 `t.mI()`，因为 `T` 必须是 `I` 接口的子类型，所以 `mI` 方法是有效的。
+>6. 同样，可以调用 `t.mCPublic()`、`t.mCProtected()` 和 `t.mCPackage()` 方法，因为这些方法是从 `C` 类继承而来，而 `T` 必须是 `C` 类的子类型。
+>7. 但是，不能调用 `t.mCPrivate()` 方法，因为这个方法是 `C` 类的私有方法，而私有方法在子类中不可见，因此会导致编译时错误。
+
+
+
+### 4.5. 参数化类型
+
+Java中的参数化类型（Parameterized Types）和泛型（Generics）的概念:
+
+1. **参数化类型是什么？**
+
+   在Java中，参数化类型是泛型类或接口的实例，它们具有一个特定的参数化，其中参数是类型。通常，参数化类型的形式为 `C<T1, ..., Tn>`，其中 `C` 是泛型类或接口的名称，而 `<T1, ..., Tn>` 是一组类型参数，它们表示泛型类或接口的特定参数化。
+
+2. 泛型类或接口可以定义类型参数，如 `F1, ..., Fn`，并为这些类型参数指定界限（bounds），如 `B1, ..., Bn`。每个类型参数 `Ti` 可以是所有在相应界限中列出的类型的子类型。
+
+>**示例**
+>
+>下面是一些示例来说明上述概念：
+>
+>- 合法的参数化类型：
+>  - `Seq<String>`：Seq 是一个泛型类，参数化为 String 类型。
+>  - `Seq<Seq<String>>`：Seq 参数化为 Seq<String> 类型。
+>  - `Seq<String>.Zipper<Integer>`：Seq 参数化为 String，而 Zipper 参数化为 Integer。
+>  - `Pair<String, Integer>`：Pair 是一个泛型类，参数化为 String 和 Integer 类型。
+>- 不合法的参数化类型：
+>  - `Seq<int>`：不能使用原始数据类型作为类型参数。
+>  - `Pair<String>`：参数数量不匹配。
+>  - `Pair<String, String, String>`：参数数量不匹配。
+>- 嵌套的参数化类型示例：
+>  - 如果非泛型类 `C` 包含具有一个类型参数的泛型成员类 `D`，那么 `C.D<Object>` 是一个参数化类型。
+>  - 如果泛型类 `C` 具有一个类型参数，并且包含非泛型成员类 `D`，那么成员类类型 `C<String>.D` 也是一个参数化类型。
+
+#### 4.5.1. 参数化类型的类型参数
+
+1. **Type Arguments of Parameterized Types（参数化类型的类型参数）**：
+
+   在Java中，参数化类型如 `C<T>` 可以包含类型参数 `T`，它表示特定的类型。这些类型参数可以是引用类型，也可以是通配符。通常，类型参数用于定制参数化类型的行为，从而实现更灵活和通用的代码。
+
+2. **TypeArguments（类型参数列表）**：
+
+   参数化类型的类型参数位于尖括号内，形式为 `<TypeArgumentList>`。类型参数之间使用逗号 `,` 分隔。
+
+3. **TypeArgument（类型参数）**：
+
+   类型参数可以是引用类型（ReferenceType）或通配符（Wildcard）。
+
+4. **Wildcard（通配符）**：
+
+   通配符是一种特殊的类型参数，通常在我们只需要对类型参数有部分了解的情况下使用。通配符可以帮助我们处理更广泛的类型范围，而不需要关心具体的类型。
+
+5. **WildcardBounds（通配符边界）**：
+
+   通配符可以具有边界，使用 `extends` 和 `super` 关键字。`extends` 表示通配符的上限，即它必须是某个类型的子类型。`super` 表示通配符的下限，即它必须是某个类型的父类型。
+
+>**示例**：
+>
+>- 类型参数的示例：
+>  - `List<Integer>`：这是一个参数化类型，参数为 `Integer` 类型。
+>  - `Pair<String, Double>`：这是另一个参数化类型，参数为 `String` 和 `Double` 类型。
+>- 通配符的示例：
+>  - `List<?>`：这是一个通配符，表示我们对列表的元素类型不做特定要求。
+>  - `List<? extends Number>`：这是带有上限边界的通配符，表示元素类型必须是 `Number` 的子类型。
+
+***通配符：***
+
+通配符是用于泛型类型的一种特殊语法，它可以用于表示泛型类型的类型参数，同时可以设置上限（extends）和下限（super）。
+
+**通配符的上限和下限**：
+
+- 通配符可以具有上限，使用 `? extends B` 表示，其中 `B` 是上限类型。这表示通配符的类型参数必须是 `B` 类型或其子类型。
+
+  ```java
+  public static double sumOfList(List<? extends Number> list) {
+      double sum = 0.0;
+      for (Number n : list) {
+          sum += n.doubleValue();
+      }
+      return sum;
+  }
+  ```
+
+  >上界通配符用于在方法中读取泛型集合的值，因为你知道它们至少是 `T` 类型的。
+
+- 通配符还可以具有下限，使用 `? super B` 表示，其中 `B` 是下限类型。这表示通配符的类型参数必须是 `B` 类型或其超类型。
+
+  ```java
+  public static void addNumbers(List<? super Integer> list) {
+      list.add(42);
+  }
+  ```
+
+  >下界通配符用于在方法中写入泛型集合的值，因为你知道它们至少是 `T` 类型的。
+
+**通配符的背景**：
+
+通配符在Java中是一种受限制的存在类型（existential types）的形式。它们可以用于处理泛型类型的子类型关系和限制。
+
+
+
+如何使用无界通配符（Unbounded Wildcards）来创建更通用的方法:
+
+```java
+import java.util.ArrayList;
+import java.util.Collection;
+
+class Test {
+    static void printCollection(Collection<?> c) {
+                                // a wildcard collection
+        for (Object o : c) {
+            System.out.println(o);
+        }
+    }
+
+    public static void main(String[] args) {
+        Collection<String> cs = new ArrayList<String>();
+        cs.add("hello");
+        cs.add("world");
+        printCollection(cs);
+    }
+}
+```
+
+>`printCollection` 方法：这是一个静态方法，它接受一个参数 `Collection<?> c`，这个参数使用了无界通配符 `<?>`。这意味着该方法可以接受任何类型的集合，而不仅仅是特定类型的集合。
+
+
+
+如何使用有界通配符（Bounded Wildcards）来创建更通用的方法:
+
+```java
+public static <T extends Comparable<T>> T findMax(List<T> list) {
+    if (list.isEmpty()) {
+        throw new IllegalArgumentException("List is empty");
+    }
+
+    T max = list.get(0);
+    for (T item : list) {
+        if (item.compareTo(max) > 0) {
+            max = item;
+        }
+    }
+
+    return max;
+}
+//我们使用上界通配符 `T extends Comparable<T>`，它要求传入的泛型列表中的元素必须实现了 `Comparable` 接口。这使得 `findMax` 方法能够比较元素并找到最大值，而不仅仅是任何类型的元素。这样的方法更通用，因为它不仅适用于特定类型，而且适用于任何实现了 `Comparable` 接口的类型。
+
+
+public static void copyElements(List<? super Integer> dest, List<Integer> source) {
+    for (Integer item : source) {
+        dest.add(item);
+    }
+}
+//我们使用下界通配符 `? super Integer`，这允许 `dest` 列表接受 `Integer` 类型及其父类型的元素。这使得方法更通用，因为它可以将 `source` 列表的元素复制到不同类型的目标列表中，只要目标列表的元素类型是 `Integer` 的父类型。
+
+```
+
+### 4.6. 类型擦除
+
+
+
 4.7. 可具体化的类型
 4.8. 原始类型
 4.9. 交叉口类型
