@@ -1253,22 +1253,244 @@ public static void copyElements(List<? super Integer> dest, List<Integer> source
 
 ### 4.6. 类型擦除
 
+ava中的类型擦除（Type Erasure）是一种编译器技术，用于处理泛型类型（parameterized types）和泛型方法（generic methods）。该概念的主要目的是**允许Java在编译时进行类型检查，而在运行时使用通用的、非泛型的代码，以保持与旧版本Java代码的向后兼容性**。
+
+类型擦除的规则如下：
+
+1. 对于参数化类型（泛型类型），如`List<String>`，编译器会将其类型擦除为原始类型（raw type），即`List`。这意味着在运行时，编译器不会保留有关类型参数的信息。
+2. 对于嵌套类型T.C，它的擦除是将外层类型T的擦除类型与内部类型C保持在一起，即|T|.C。这确保了嵌套类型在类型擦除后仍然保持嵌套结构。
+3. 对于数组类型T[]，它的擦除是将数组元素类型T的擦除类型与数组维度保持在一起，即|T|[]。这意味着数组类型的维度信息在类型擦除后仍然存在。
+4. 对于类型变量，编译器会将其擦除为其左边界（bound）的类型。例如，如果有一个类型变量`<T extends Number>`，则擦除后的类型为`Number`。
+5. 对于除上述情况之外的其他类型，擦除后的类型与原始类型相同，不进行任何修改。这包括基本数据类型（如int、double）、非泛型类和接口等。
+
+```java
+import java.util.List;
+import java.util.ArrayList;
+
+public class TypeErasureExample {
+    public static void main(String[] args) {
+        // 示例1: 参数化类型擦除
+        List<String> stringList = new ArrayList<>();
+        List<Integer> intList = new ArrayList<>();
+        
+        // 编译时，类型参数被擦除，变成原始类型List
+        System.out.println(stringList.getClass().getName()); // 输出：java.util.ArrayList
+        System.out.println(intList.getClass().getName());    // 输出：java.util.ArrayList
+
+        // 示例2: 嵌套类型擦除
+        Outer.Inner inner = new Outer.Inner();
+        
+        // 编译时，嵌套类型被擦除，成为原始类型
+        System.out.println(inner.getClass().getName()); // 输出：TypeErasureExample$Outer$Inner
+
+        // 示例3: 数组类型擦除
+        String[] strArray = new String[5];
+        Integer[] intArray = new Integer[5];
+        
+        // 编译时，数组元素类型被擦除，保留维度
+        System.out.println(strArray.getClass().getName()); // 输出：[Ljava.lang.String;
+        System.out.println(intArray.getClass().getName()); // 输出：[Ljava.lang.Integer;
+
+        // 示例4: 类型变量的擦除
+        GenericClass<Integer> intGeneric = new GenericClass<>(5);
+        GenericClass<String> strGeneric = new GenericClass<>("Hello");
+
+        // 编译时，类型变量T的擦除是其左边界的擦除类型
+        System.out.println(intGeneric.getValue().getClass().getName()); // 输出：java.lang.Integer
+        System.out.println(strGeneric.getValue().getClass().getName()); // 输出：java.lang.String
+    }
+
+    static class Outer {
+        static class Inner {
+        }
+    }
+
+    static class GenericClass<T> {
+        private T value;
+
+        public GenericClass(T value) {
+            this.value = value;
+        }
+
+        public T getValue() {
+            return value;
+        }
+    }
+}
+
+```
+
+>请注意，编译时会进行类型擦除，因此在运行时无法获取类型参数的信息，而只能获取原始类型信息。
 
 
-4.7. 可具体化的类型
-4.8. 原始类型
-4.9. 交叉口类型
-4.10. 子类型化
+
+### 4.7. Reifiable类型
+
+Reifiable Types（可具体化类型）是Java编程语言中的一个概念，它指的是在运行时可以完全保留类型信息的一类类型。在Java中，由于编译时类型信息的擦除，不是所有类型都能在运行时获得完整的信息。因此，Reifiable Types是那些在运行时仍然能够完整表达自身类型的类型。
+
+以下是定义Reifiable Types的规则：
+
+1. **非泛型类或接口类型声明**：任何引用非泛型类或接口类型声明的类型都是可具体化的。这意味着普通的类或接口类型在运行时是具体化的。
+2. **所有类型参数都是无界通配符的参数化类型**：如果一个类型是参数化类型，并且它的所有类型参数都是无界通配符（unbounded wildcards），则该类型是可具体化的。无界通配符通常表示为`<?>`。
+3. **原始类型（Raw Type）**：原始类型是可具体化的。原始类型是指未指定类型参数的泛型类型，例如`List`而不是`List<String>`。
+4. **基本数据类型**：基本数据类型，如`int`、`double`，都是可具体化的。
+5. **数组类型**：数组类型也是可具体化的，但要求其元素类型也是可具体化的。
+6. **嵌套类型**：对于嵌套类型，如果每个嵌套部分都是可具体化的，那么整个嵌套类型也是可具体化的。例如，如果有一个泛型类X<T>中包含泛型成员类Y<U>，那么类型X<?>.Y<?>是可具体化的，因为X<?>可具体化且Y<?>可具体化。
+
+>需要注意的是，交集类型（Intersection Type）不是可具体化的。这意味着包含多个泛型类型的交集类型在运行时无法完整表达自身类型信息。
+>
+>Java选择将某些类型视为可具体化，而将其他类型视为不可具体化，是出于对现有代码兼容性的考虑。这个决策确保了旧版本Java代码可以在新版本Java中继续运行，而不会引入不必要的复杂性和依赖关系。
+
+
+
+### 4.8. 原始类型
+
+Raw Types（原始类型）是 Java 泛型系统中的一个概念，用于与非泛型的旧代码进行交互，以确保向后兼容性。
+
+**Raw Type的定义**：Raw Type可以是以下之一：
+
+- 通过采用泛型类或接口声明的名称，但不附带类型参数列表形成的引用类型。
+- 数组类型，其中元素类型是Raw Type。
+- 原始类型（非泛型的类或接口）的内部成员类的名称，但不从超类或超接口继承而来。
+
+**使用Raw Type的局限**：Raw Type的使用仅作为向后兼容性的妥协，主要用于与旧代码互操作。强烈不建议在引入泛型后的新代码中使用Raw Type。未来版本的Java可能会禁止使用Raw Type
+
+```java
+ public void main(String[] args) {
+        // 示例1: Raw Type的定义
+        List<String> genericList = new ArrayList<>();
+        List rawList = genericList; // 使用Raw Type
+
+        // 示例2: 访问Raw Type成员的警告
+        rawList.add(42); // 无类型安全检查，会引发 unchecked 警告
+        String firstElement = (String) rawList.get(0); // 需要进行强制类型转换
+
+        // 示例3: Raw Type与继承
+        RawInheritedClass rawInherited = new RawInheritedClass();
+        List<String> stringList = rawInherited.myStrings(); // 调用继承的方法
+        List<Number> numberList = rawInherited.myNumbers(); // 无需类型转换
+
+        // 示例4: Raw Type与泛型库的交互
+        RawLibraryConsumer consumer = new RawLibraryConsumer();
+        List<String> result = consumer.consumeRawType(); // 从泛型库获取数据
+        
+
+    }
+
+    class RawInheritedClass extends NonGeneric {
+        List<String> myStrings() { return new ArrayList<>(); }
+    }
+
+    class NonGeneric {
+        List<Number> myNumbers() { return new ArrayList<>(); }
+    }
+
+    class RawLibraryConsumer {
+        List consumeRawType() {
+            List rawList = new ArrayList();
+            rawList.add("Hello");
+            rawList.add(42); // 无类型安全检查，会引发 unchecked 警告
+            return rawList;
+        }
+    }
+```
+
+>因此在创建对象的时候，我们通常会建议带上它对应的类型。例如：
+>
+>```java
+>        List<String> genericList = new ArrayList<>();
+>        List<String>  rawList = genericList; // 使用Raw Type
+>        rawList.add(42); // 保证编译器显示错误提醒
+>```
+>
+>
+
+
+
+### 4.9. 交叉类型
+
+交集类型是 Java 泛型系统中的一个概念，表示一个类型可以同时具有多个不同的类型。交集类型采用形式 `T1 & ... & Tn`，其中 `Ti` 是不同的类型。交集类型可以从类型参数的界限（bounds）中派生，也可以通过强制类型转换（cast expressions）产生。它们还在捕获转换（capture conversion）和最小上限计算（least upper bound computation）的过程中出现。
+
+**交集类型的特点：**
+
+- 交集类型的值是同时满足所有 `Ti` 类型要求的对象。
+- 交集类型可以由类型参数的界限、强制类型转换、捕获转换和最小上限计算等方式派生。
+
+
+
+以下是关于 Java 中的交叉类型的一些示例和概念：
+
+**示例 1：使用通配符（Wildcard）**
+
+```java
+public static <T extends Number & Comparable<T>> T findMax(T[] array) {
+    T max = array[0];
+    for (T item : array) {
+        if (item.compareTo(max) > 0) {
+            max = item;
+        }
+    }
+    return max;
+}
+```
+
+在这个示例中，我们使用通配符 `T extends Number & Comparable<T>`，表示类型 `T` 必须同时是 `Number` 和 `Comparable<T>` 的子类型，从而引入了交叉类型的概念。
+
+**示例 2：使用接口多继承**
+
+Java 中不支持类的多继承，但可以通过接口来实现多继承的效果。在某种程度上，这也可以看作是交叉类型的一种实现方式。例如：
+
+```java
+interface Printable {
+    void print();
+}
+
+interface Readable {
+    void read();
+}
+
+class Document implements Printable, Readable {
+    public void print() {
+        // 实现打印逻辑
+    }
+
+    public void read() {
+        // 实现读取逻辑
+    }
+}
+```
+
+在这个示例中，`Document` 类实现了两个接口 `Printable` 和 `Readable`，从而具有了两种不同类型的行为。
+
+
+
+### 4.10. 子类型化
+
+
+
 4.10.1. 原始类型之间的子类型化
+
 4.10.2. 类和接口类型之间的子类型化
+
 4.10.3. 数组类型之间的子类型化
+
 4.10.4. 最小上界
+
 4.10.5。类型投影
+
+
+
 4.11. 使用类型的地方
-4.12. 变量
-4.12.1. 原始类型变量
+
+4.12. 变量4.12.1. 原始类型变量
+
 4.12.2. 引用类型变量
+
 4.12.3. 变量的种类
+
 4.12.4. final变量
+
 4.12.5。变量的初始值
+
 4.12.6。类型、类和接口
+
