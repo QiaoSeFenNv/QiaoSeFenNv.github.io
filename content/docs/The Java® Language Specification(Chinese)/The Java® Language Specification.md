@@ -1745,10 +1745,10 @@ class Example {
    ```
 
 
-   
 
 
-#### 4.12.3. 变量的种类 
+
+#### 4.12.3. 变量的种类
 
 1. **类变量（Class Variable）：**
 
@@ -1761,16 +1761,16 @@ class Example {
      ```java
      public class MyClass {
          public static int classVariable; // 类变量
-     
+
          public static void main(String[] args) {
              MyClass.classVariable = 10; // 访问和修改类变量
              System.out.println(MyClass.classVariable);
          }
      }
-     
+
      ```
 
-     
+
 
 2. **实例变量（Instance Variable）：**
 
@@ -1783,12 +1783,12 @@ class Example {
      ```java
      public class MyClass {
          public int instanceVariable; // 实例变量
-     
+
          public MyClass() {
              this.instanceVariable = 20; // 实例变量在构造函数中初始化
          }
      }
-     
+
      ```
 
 3. **数组组件（Array Component）：**
@@ -1800,15 +1800,15 @@ class Example {
      ```java
      public class MyClass {
          public int[] array = new int[5]; // 数组声明
-     
+
          public MyClass() {
              array[0] = 1; // 初始化数组的第一个元素
          }
      }
-     
+
      ```
 
-     
+
 
 4. **方法参数（Method Parameter）：**
 
@@ -1824,10 +1824,10 @@ class Example {
              System.out.println(parameter);
          }
      }
-     
+
      ```
 
-     
+
 
 5. **构造器参数（Constructor Parameter）：**
 
@@ -1840,15 +1840,15 @@ class Example {
      ```java
      public class MyClass {
          public int instanceVariable;
-     
+
          public MyClass(int constructorParameter) { // 构造器参数
              this.instanceVariable = constructorParameter;
          }
      }
-     
+
      ```
 
-     
+
 
 6. **Lambda 参数（Lambda Parameter）：**
 
@@ -1860,7 +1860,7 @@ class Example {
 
      ```java
      import java.util.function.Consumer;
-     
+
      public class MyClass {
          public static void main(String[] args) {
              Consumer<Integer> lambda = (lambdaParameter) -> { // Lambda 参数
@@ -1869,10 +1869,10 @@ class Example {
              lambda.accept(30);
          }
      }
-     
+
      ```
 
-     
+
 
 7. **异常参数（Exception Parameter）：**
 
@@ -1892,10 +1892,10 @@ class Example {
              }
          }
      }
-     
+
      ```
 
-     
+
 
 8. **局部变量（Local Variable）：**
 
@@ -1912,12 +1912,12 @@ class Example {
              System.out.println(localVar);
          }
      }
-     
+
      ```
 
-     
 
-#### 4.12.4. final变量 
+
+#### 4.12.4. final变量
 
 在Java中，`final` 变量表示一旦给定了值，就不允许再改变。这是Java中实现不可变性的一种机制。
 
@@ -1949,7 +1949,7 @@ class Example {
 
 
 
-#### 4.12.5. 变量的初始值 
+#### 4.12.5. 变量的初始值
 
 - **基本数据类型的默认值：**
   - `byte`：默认值是0，即 `(byte)0`。
@@ -2149,7 +2149,7 @@ public class Test {
 
 
 ```java
-class Test {            
+class Test {
     public static void main(String[] args) {
         // Casting conversion (5.5) of a float literal to
         // type int. Without the cast operator, this would
@@ -2399,14 +2399,14 @@ public class Test {
     public static void main(String[] args) {
         SomeClass sc = new SomeClass(); // sc是SomeClass的实例
         FinalClass fc = new FinalClass(); // fc是FinalClass的实例
-        
+
         // 正确的扩宽引用转换
         SomeInterface si = sc;
-        
+
         // 编译错误：不能将FinalClass类型转换为SomeInterface
         // 因为FinalClass是final的，且没有实现SomeInterface
         // SomeInterface si2 = (SomeInterface) fc;
-        
+
         // 正确的缩小引用转换
         // sc是SomeClass实例，SomeClass实现了SomeInterface
         SomeClass sc2 = (SomeClass) si;
@@ -2416,5 +2416,6 @@ public class Test {
 ```
 
 >`SomeClass`实现了`SomeInterface`接口，因此我们可以将`SomeClass`的对象引用赋给`SomeInterface`类型的变量（这是一个扩宽引用转换）。然而，尽管`FinalClass`和`SomeInterface`都是引用类型，但`FinalClass`没有实现`SomeInterface`且是一个final类，因此不存在从`FinalClass`到`SomeInterface`的缩小引用转换。
+
 
 
