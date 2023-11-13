@@ -2419,3 +2419,609 @@ public class Test {
 
 
 
+##### 5.1.6.2. 检查和未检查的缩小参考转换
+
+**Checked 缩小引用转换：**
+
+- Java虚拟机会完全验证类型的正确性。
+- 不会在编译时生成警告。
+
+**Unchecked 缩小引用转换：**
+
+- Java虚拟机无法完全验证类型的正确性，可能导致堆污染（heap pollution）。
+- 在编译时，如果是未检查的缩小引用转换，会生成一个未检查的警告，除非使用 `@SuppressWarnings` 进行抑制。
+
+**Unchecked 缩小引用转换的情况:**
+
+1. 从类型 S 缩小引用转换到参数化类或接口类型 T 时，该转换是 unchecked 的，除非以下至少有一项成立：
+
+   - T 的所有类型参数都是无界通配符。
+   - T 是 S 的子类型，并且 S 没有子类型 X，X 的类型参数不包含在 T 的类型参数中。
+
+   ```java
+   import java.util.List;
+
+   public class UncheckedConversionExample1 {
+       public static void main(String[] args) {
+           List<?> list = getList();
+
+           // Unchecked narrowing reference conversion
+           List<String> stringList = (List<String>) list; // 编译器提示转换警告⚠
+       }
+
+       static List<?> getList() {
+           return List.of("One", "Two", "Three");
+       }
+   }
+
+   ```
+
+
+
+2. 从类型 S 缩小引用转换到类型变量 T 时是 unchecked 的。
+
+   ```java
+   public class UncheckedConversionExample2 {
+       public static void main(String[] args) {
+           Object obj = "Hello";
+
+           // Unchecked narrowing reference conversion
+           String str = (String) obj; // Warning generated
+       }
+   }
+
+   ```
+
+
+
+3. 从类型 S 缩小引用转换到交集类型 T1 & ... & Tn 时，如果存在 Ti（1 ≤ i ≤ n），使得 S 不是 Ti 的子类型且从 S 到 Ti 的缩小引用转换是 unchecked 的，那么整个引用转换也是 unchecked 的。
+
+   ```java
+   public class UncheckedConversionExample3 {
+       public static void main(String[] args) {
+           Object obj = "Hello";
+
+           // Unchecked narrowing reference conversion
+           CharSequence charSequence = (CharSequence) obj; // Warning generated
+       }
+   }
+   //Object 类型的引用被转换为 CharSequence 类型。如果存在 Ti 使得 S 不是 Ti 的子类型，而从 S 到 Ti 的缩小引用转换是 unchecked 的，那么整个引用转换也是 unchecked 的。这种转换会生成一个未检查的警告。
+   ```
+
+
+
+
+
+##### 5.1.6.3. 检查的窄化引用转换
+
+所有检查的窄化引用转换在运行时都需要有效性检查。主要用于未参数化的类和接口类型。
+
+- 如果转换在概念上是"上转型"，则转换是完全不检查的，因为在Java虚拟机的非泛型类型系统中，这种转换是合法的，不需要运行时测试。
+
+  ```java
+  import java.util.ArrayList;
+  import java.util.Collection;
+
+  public class UncheckedConversionExample {
+      public static void main(String[] args) {
+          ArrayList<String> stringList = new ArrayList<>();
+          Collection<?> collection = stringList; // Completely unchecked
+      }
+  }
+  //ArrayList<String> 被转换为 Collection<?>，是完全不检查的，因为 ArrayList 是 Collection 的子类型。
+  ```
+
+
+
+- 如果转换在概念上是"下转型"，则转换是部分不检查的，即使在Java虚拟机的非泛型类型系统中，也需要运行时检查以测试转换涉及的（原始）类型的兼容性。
+
+  ```java
+  import java.util.ArrayList;
+  import java.util.Collection;
+
+  public class PartiallyUncheckedConversionExample {
+      public static void main(String[] args) {
+          Collection<?> collection = new ArrayList<>();
+          ArrayList<String> stringList = (ArrayList<String>) collection; // Partially unchecked
+      }
+  }
+  //Collection<?> 被转换为 ArrayList<String>，是部分不检查的，因为 Collection 不是 ArrayList 的子类型。
+  ```
+
+**在检查的或部分不检查的窄化引用转换的运行时有效性检查中，主要包括以下规则：**
+
+- 如果运行时值为 `null`，则转换是允许的。
+
+  ```java
+  public class RuntimeCheckExample1 {
+      public static void main(String[] args) {
+          // Null 可以转换任意类型并不会报错,但是转换
+          Object obj = (Integer) null;
+          Object obj = (String) null;
+          //但是并不包括
+          String obj = (Object) null;
+      }
+  }
+
+  ```
+
+
+
+- 否则，R是对象引用的类，T是正在转换为的类型的擦除形式。然后：
+
+  - 如果 R是普通类（不是数组类）：
+
+    - 如果 `T` 是类类型，则 `R` 必须是与 `T` 相同的类或 `T` 的子类，否则抛出 `ClassCastException`。
+
+      ```java
+      public class RuntimeCheckExample2 {
+          public static void main(String[] args) {
+              Object obj = "Hello";
+
+              // Valid narrowing reference conversion
+              String str = (String) obj;
+
+              // Invalid narrowing reference conversion, ClassCastException will be thrown
+              Integer num = (Integer) obj;
+          }
+      }
+      ```
+
+    - 如果 `T` 是接口类型，则 `R` 必须实现接口 `T`，否则抛出 `ClassCastException`。
+
+      ```java
+      interface MyInterface {}
+
+      public class RuntimeCheckExample3 implements MyInterface {
+          public static void main(String[] args) {
+              MyInterface myInterface = new RuntimeCheckExample3();
+
+              // Valid narrowing reference conversion
+              RuntimeCheckExample3 obj = (RuntimeCheckExample3) myInterface;
+
+              // Invalid narrowing reference conversion, ClassCastException will be thrown
+              RuntimeCheckExample2 obj2 = (RuntimeCheckExample2) myInterface;
+          }
+      }
+
+      ```
+
+    - 如果 `T` 是数组类型，则抛出 `ClassCastException`。
+
+      ```java
+      public class RuntimeCheckExample4 {
+          public static void main(String[] args) {
+              Object obj = new String[]{"One", "Two", "Three"};
+
+              // 有效的窄化引用转换
+              String[] strArray = (String[]) obj;
+
+              // 无效的窄化引用转换，将抛出ClassCastException
+              Integer[] intArray = (Integer[]) obj;
+          }
+      }
+
+      ```
+
+  - 如果 R是接口：
+
+    - 如果 `T` 是类类型，则 `T` 必须是 `Object`，否则抛出 `ClassCastException`。
+    - 如果 `T` 是接口类型，则 `R` 必须是与 `T` 相同的接口或 `T` 的子接口，否则抛出 `ClassCastException`。
+    - 如果 `T` 是数组类型，则抛出 `ClassCastException`。
+
+  - 如果 R是表示数组类型 RC[]的类：
+
+    - 如果 `T` 是类类型，则 `T` 必须是 `Object`，否则抛出 `ClassCastException`。
+    - 如果 `T` 是接口类型，则 `T` 必须是 `java.io.Serializable` 或 `Cloneable`（数组唯一实现的接口），否则抛出 `ClassCastException`。
+    - 如果 `T` 是数组类型 `TC[]`，则抛出 `ClassCastException`，除非 `TC` 和 `RC` 是相同的原始类型，或者 `TC` 和 `RC` 是引用类型并且通过这些运行时规则的递归应用是允许的。
+
+
+
+
+
+#### 5.1.7. 装箱转换
+
+装箱转换将原始类型的表达式视为相应引用类型的表达式。具体而言，以下九种转换被称为装箱转换：
+
+1. 从 `boolean` 类型到 `Boolean` 类型
+2. 从 `byte` 类型到 `Byte` 类型
+3. 从 `short` 类型到 `Short` 类型
+4. 从 `char` 类型到 `Character` 类型
+5. 从 `int` 类型到 `Integer` 类型
+6. 从 `long` 类型到 `Long` 类型
+7. 从 `float` 类型到 `Float` 类型
+8. 从 `double` 类型到 `Double` 类型
+9. 从 `null` 类型到 `null` 类型
+
+条件运算符会对其操作数的类型应用装箱转换，并在进一步的计算中使用结果。
+
+在运行时，装箱转换的过程如下：
+
+- 如果 `p` 是 `boolean` 类型的值，那么装箱转换将 `p` 转换为一个引用 `r`，其类和类型为 `Boolean`，满足 `r.booleanValue() == p`。
+
+```java
+public class BoxingConversionExample1 {
+    public static void main(String[] args) {
+        boolean p = true;
+        Boolean r = p; // Boxing conversion
+        System.out.println(r.booleanValue()); // Output: true
+    }
+}
+```
+
+- 如果 `p` 是 `byte` 类型的值，那么装箱转换将 `p` 转换为一个引用 `r`，其类和类型为 `Byte`，满足 `r.byteValue() == p`。
+
+```java
+public class BoxingConversionExample2 {
+    public static void main(String[] args) {
+        byte p = 42;
+        Byte r = p; // Boxing conversion
+        System.out.println(r.byteValue()); // Output: 42
+    }
+}
+```
+
+- 如果 `p` 是 `char` 类型的值，那么装箱转换将 `p` 转换为一个引用 `r`，其类和类型为 `Character`，满足 `r.charValue() == p`。
+
+```java
+public class BoxingConversionExample3 {
+    public static void main(String[] args) {
+        char p = 'A';
+        Character r = p; // Boxing conversion
+        System.out.println(r.charValue()); // Output: A
+    }
+}
+```
+
+- 如果 `p` 是 `short` 类型的值，那么装箱转换将 `p` 转换为一个引用 `r`，其类和类型为 `Short`，满足 `r.shortValue() == p`。
+
+```java
+public class BoxingConversionExample4 {
+    public static void main(String[] args) {
+        short p = 123;
+        Short r = p; // Boxing conversion
+        System.out.println(r.shortValue()); // Output: 123
+    }
+}
+```
+
+- 如果 `p` 是 `int` 类型的值，那么装箱转换将 `p` 转换为一个引用 `r`，其类和类型为 `Integer`，满足 `r.intValue() == p`。
+
+```java
+public class BoxingConversionExample5 {
+    public static void main(String[] args) {
+        int p = 456;
+        Integer r = p; // Boxing conversion
+        System.out.println(r.intValue()); // Output: 456
+    }
+}
+```
+
+- 如果 `p` 是 `long` 类型的值，那么装箱转换将 `p` 转换为一个引用 `r`，其类和类型为 `Long`，满足 `r.longValue() == p`。
+
+```java
+public class BoxingConversionExample6 {
+    public static void main(String[] args) {
+        long p = 789L;
+        Long r = p; // Boxing conversion
+        System.out.println(r.longValue()); // Output: 789
+    }
+}
+```
+
+- 如果 `p` 是 `float` 类型的值：
+
+  - 如果 `p` 不是 `NaN`，则装箱转换将 `p` 转换为一个引用 `r`，其类和类型为 `Float`，满足 `r.floatValue()` 的结果为 `p`。
+
+  - 否则，装箱转换将 `p` 转换为一个引用 `r`，其类和类型为 `Float`，满足 `r.isNaN()` 的结果为 `true`。
+
+```java
+public class BoxingConversionExample8 {
+    public static void main(String[] args) {
+        double p = 2.718;
+
+        // Valid boxing conversion
+        Double r = p;
+        System.out.println(r.doubleValue()); // Output: 2.718
+
+        // Invalid boxing conversion with NaN
+        Double nanValue = Double.NaN;
+        System.out.println(nanValue.isNaN()); // Output: true
+    }
+}
+```
+
+- 如果 `p` 是其他类型的值，装箱转换等效于标识转换（identity conversion）
+
+```java
+public class BoxingConversionExample9 {
+    public static void main(String[] args) {
+        // Example with other type (String)
+        String p = "Hello";
+        String r = p; // Boxing conversion (identity conversion)
+        System.out.println(r); // Output: Hello
+    }
+}
+
+```
+
+>如果被装箱的值 `p` 是常量表达式的结果，且其类型为 `boolean`、`byte`、`char`、`short`、`int` 或 `long`，且结果是 `true`、`false`、在 '\u0000' 到 '\u007f' 范围内的字符，或在 -128 到 127 范围内的整数，则任何两个装箱转换的结果 `a` 和 `b` 都满足 `a == b`。
+>
+>这保证在大多数常见情况下，行为将是期望的行为，而不会对性能造成不必要的影响，特别是在小型设备上。
+>
+>需要注意，装箱转换可能导致 `OutOfMemoryError`，如果需要分配一个新的 `Boolean`、`Byte`、`Character`、`Short`、`Integer`、`Long`、`Float` 或 `Double` 包装类的实例，而可用的存储空间不足。
+
+
+
+#### 5.1.8. 拆箱转换
+
+拆箱转换将引用类型的表达式视为相应原始类型的表达式。具体而言，以下八种转换被称为拆箱转换：
+
+1. 从 `Boolean` 类型到 `boolean` 类型
+2. 从 `Byte` 类型到 `byte` 类型
+3. 从 `Short` 类型到 `short` 类型
+4. 从 `Character` 类型到 `char` 类型
+5. 从 `Integer` 类型到 `int` 类型
+6. 从 `Long` 类型到 `long` 类型
+7. 从 `Float` 类型到 `float` 类型
+8. 从 `Double` 类型到 `double` 类型
+
+在运行时，拆箱转换的过程如下：
+
+- 如果 `r` 是类型为 `Boolean` 的引用，则拆箱转换将 `r` 转换为 `r.booleanValue()`。
+
+```java
+public class UnboxingConversionExample1 {
+    public static void main(String[] args) {
+        Boolean r = true;
+        boolean p = r; // Unboxing conversion
+        System.out.println(p); // Output: true
+    }
+}
+```
+
+- 如果 `r` 是类型为 `Byte` 的引用，则拆箱转换将 `r` 转换为 `r.byteValue()`。
+
+```java
+public class UnboxingConversionExample2 {
+    public static void main(String[] args) {
+        Byte r = 42;
+        byte p = r; // Unboxing conversion
+        System.out.println(p); // Output: 42
+    }
+}
+```
+
+- 如果 `r` 是类型为 `Character` 的引用，则拆箱转换将 `r` 转换为 `r.charValue()`。
+
+```java
+public class UnboxingConversionExample3 {
+    public static void main(String[] args) {
+        Character r = 'A';
+        char p = r; // Unboxing conversion
+        System.out.println(p); // Output: A
+    }
+}
+```
+
+- 如果 `r` 是类型为 `Short` 的引用，则拆箱转换将 `r` 转换为 `r.shortValue()`。
+
+```java
+public class UnboxingConversionExample4 {
+    public static void main(String[] args) {
+        Short r = 123;
+        short p = r; // Unboxing conversion
+        System.out.println(p); // Output: 123
+    }
+}
+```
+
+- 如果 `r` 是类型为 `Integer` 的引用，则拆箱转换将 `r` 转换为 `r.intValue()`。
+
+```java
+public class UnboxingConversionExample5 {
+    public static void main(String[] args) {
+        Integer r = 456;
+        int p = r; // Unboxing conversion
+        System.out.println(p); // Output: 456
+    }
+}
+```
+
+- 如果 `r` 是类型为 `Long` 的引用，则拆箱转换将 `r` 转换为 `r.longValue()`。
+
+```java
+public class UnboxingConversionExample6 {
+    public static void main(String[] args) {
+        Long r = 789L;
+        long p = r; // Unboxing conversion
+        System.out.println(p); // Output: 789
+    }
+}
+```
+
+- 如果 `r` 是类型为 `Float` 的引用，则拆箱转换将 `r` 转换为 `r.floatValue()`。
+
+```java
+public class UnboxingConversionExample7 {
+    public static void main(String[] args) {
+        Float r = 3.14f;
+        float p = r; // Unboxing conversion
+        System.out.println(p); // Output: 3.14
+    }
+}
+```
+
+- 如果 `r` 是类型为 `Double` 的引用，则拆箱转换将 `r` 转换为 `r.doubleValue()`。
+
+```java
+public class UnboxingConversionExample8 {
+    public static void main(String[] args) {
+        Double r = 2.718;
+        double p = r; // Unboxing conversion
+        System.out.println(p); // Output: 2.718
+    }
+}
+```
+
+>- 如果 `r` 是 `null`，拆箱转换将抛出 `NullPointerException`。
+>- 可以将一个类型转换为数值类型，如果它是数值类型，或者它是引用类型，并可以通过拆箱转换转换为数值类型。
+>- 可以将一个类型转换为整数类型，如果它是整数类型，或者它是引用类型，并可以通过拆箱转换转换为整数类型。
+
+
+
+#### 5.1.9. 未经检查的转换
+
+在泛型类型声明中，假设 G 代表一个具有 n 个类型参数的泛型类型声明。
+
+- 从原始类或接口类型 G 转换为形式为 G<T1,...,Tn> 的任何参数化类型存在无检查转换。
+- 从原始数组类型 G[]k 转换为形式为 G<T1,...,Tn>[]k 的任何数组类型存在无检查转换。其中 []k 表示 k 维数组。
+
+>无检查转换用于实现遗留代码与已进行泛型转换的库的平滑互操作性。在引入泛型类型之前编写的遗留代码（legacy code）与已进行泛型化处理的库（我们称之为泛型化）之间的互操作是一个典型的应用场景。
+
+让我们通过一些简单的代码示例来理解无检查转换的概念：
+
+1. 从原始类型 `Box` 转换为参数化类型 `Box<String>`：
+
+```java
+class Box<T> {
+    private T value;
+
+    public Box(T value) {
+        this.value = value;
+    }
+
+    public T getValue() {
+        return value;
+    }
+}
+
+public class UncheckedConversionExample {
+    public static void main(String[] args) {
+        // Unchecked conversion from raw type Box to parameterized type Box<String>
+        Box<String> stringBox = new Box("Hello");
+        System.out.println(stringBox.getValue()); // Output: Hello
+    }
+}
+```
+
+在这个例子中，`Box` 是一个泛型类，我们使用无检查转换将原始类型 `Box` 转换为参数化类型 `Box<String>`。
+
+1. 从原始数组类型 `RawType[]` 转换为参数化数组类型 `ParameterizedType<String>[]`：
+
+```java
+public class UncheckedConversionArrayExample {
+    public static void main(String[] args) {
+        // Unchecked conversion from raw array type RawType[] to parameterized array type ParameterizedType<String>[]
+        String[] stringArray = new String[]{"One", "Two", "Three"};
+        Object rawArray = stringArray; // Raw array type
+        String[] newArray = (String[]) rawArray; // Unchecked conversion to parameterized array type
+        System.out.println(Arrays.toString(newArray)); // Output: [One, Two, Three]
+    }
+}
+```
+
+在这个例子中，我们使用无检查转换将原始数组类型 `RawType[]` 转换为参数化数组类型 `ParameterizedType<String>[]`。
+
+
+
+#### 5.1.10. 捕捉转换
+
+在泛型类型声明中，假设 G 代表一个具有 n 个类型参数 A1,...,An 和相应边界 U1,...,Un 的泛型类型声明。
+
+1. **通配符类型参数 `?`：**
+   - 如果 `Ti` 是形如 `?` 的通配符类型参数，那么对应的 `Si` 是一个新的类型变量。
+   - `Si` 的上界（最大允许的类型）为 `Ui[A1:=S1,...,An:=Sn]`，表示在 `Ui` 的基础上，用 `S1` 替代 `A1`、`S2` 替代 `A2`，以此类推。
+   - `Si` 的下界为 `null` 类型。
+2. **通配符类型参数 `? extends Bi`：**
+   - 如果 `Ti` 是形如 `? extends Bi` 的通配符类型参数，那么对应的 `Si` 也是一个新的类型变量。
+   - `Si` 的上界为 `glb(Bi, Ui[A1:=S1,...,An:=Sn])`，表示 `Bi` 和 `Ui` 之间的最大下界。
+   - `Si` 的下界为 `null` 类型。
+   - 如果任意两个类 `Vi` 和 `Vj`，其中一个不是另一个的子类，那么这是一个编译时错误。
+3. **通配符类型参数 `? super Bi`：**
+   - 如果 `Ti` 是形如 `? super Bi` 的通配符类型参数，那么对应的 `Si` 仍然是一个新的类型变量。
+   - `Si` 的上界为 `Ui[A1:=S1,...,An:=Sn]`。
+   - `Si` 的下界为 `Bi`。
+4. **其他情况：**
+   - 如果 `Ti` 不是通配符类型参数，那么 `Si` 就等于 `Ti`。
+
+>让我们通过理解 `java.util.Collections.reverse()` 方法的实现来了解捕获转换的动机：
+>
+>```java
+>public static void reverse(List<?> list);
+>```
+>
+>这个方法反转提供的列表。它适用于任何类型的列表，因此使用通配符类型 `List<?>` 作为形式参数的类型是完全合适的。
+>
+>考虑如何实现 `reverse()`：
+>
+>```java
+>public static void reverse(List<?> list) { rev(list); }
+>private static <T> void rev(List<T> list) {
+>    List<T> tmp = new ArrayList<T>(list);
+>    for (int i = 0; i < list.size(); i++) {
+>        list.set(i, tmp.get(list.size() - i - 1));
+>    }
+>}
+>```
+>
+>实现需要复制列表，从副本中提取元素并将其插入原始列表。为了以类型安全的方式执行此操作，我们需要为传入列表的元素类型（即 List<?> 的类型）命名为 T。我们在私有服务方法 `rev()` 中执行此操作。一般来说，`List<?>` 是一个未知类型的列表。**对于任何类型 T，它都不是 List<T> 的子类型。允许这样的子类型关系将是不安全的。**
+>
+>如果不提供一些特殊的处理，我们可以看到从 `reverse()` 调用到 `rev()` 将被禁止。如果是这种情况，`reverse()` 的作者将被迫将其签名编写为：
+>
+>```java
+>public static <T> void reverse(List<T> list)
+>
+>```
+>
+>这是不可取的，因为它向调用者暴露了实现信息。更糟糕的是，API 的设计者可能会推断使用通配符的签名是 API 的调用者所需的，只有在稍后才意识到这样的签名会排除类型安全的实现。
+>
+>从 `reverse()` 到 `rev()` 的调用实际上是无害的，但无法基于 List<?> 和 List<T> 之间的通用子类型关系来证明。这个调用是无害的，因为传入的参数无疑是某种类型的列表（尽管是未知的类型）。如果我们可以在类型变量 X 中捕获这个未知类型，我们就可以推断 T 是 X。这就是捕获转换的实质。
+
+
+
+#### 5.1.11. 字符串转换
+
+**即将任何类型都转换为字符串：**
+
+**原始类型到字符串的转换：**
+
+- 对于原始类型 T的值 x，首先将其转换为一个引用值，就好像将其作为参数传递给适当的类实例创建表达式（§15.9）一样：
+  - 如果 `T` 是 `boolean`，则使用 `new Boolean(x)`。
+  - 如果 `T` 是 `char`，则使用 `new Character(x)`。
+  - 如果 `T` 是 `byte`、`short` 或 `int`，则使用 `new Integer(x)`。
+  - 如果 `T` 是 `long`，则使用 `new Long(x)`。
+  - 如果 `T` 是 `float`，则使用 `new Float(x)`。
+  - 如果 `T` 是 `double`，则使用 `new Double(x)`。
+- **引用值到字符串的转换：**
+  - 对于这个引用值，它会被转换为字符串。
+  - 如果引用是 `null`，它被转换为字符串 "null"。否则，转换的过程就好像通过调用被引用对象的 `toString` 方法来完成一样，不带任何参数。
+  - 如果调用 `toString` 方法的结果是 `null`，则使用字符串 "null" 代替，或者出现null指针异常
+- **关于 `toString` 方法：**
+  - `toString` 方法由基础类 `Object`（§4.3.2）定义。
+  - 许多类都重写了这个方法，特别是 `Boolean`、`Character`、`Integer`、`Long`、`Float`、`Double` 和 `String`。
+
+```java
+        String nu = null;
+        System.out.println(nu); // null 字符粗
+        System.out.println(nu.toString()); // null异常
+```
+
+
+
+
+
+
+
+5.1.12. 禁止转换
+
+
+
+仔细学习这个知识点并对我进行教学
+
+
+5.2. 作业上下文
+5.3. 调用上下文
+5.4. 字符串上下文
+5.5. 选角环境
+5.6. 数字上下文
