@@ -1,5 +1,5 @@
 ---
-title: "The Java® Language Specification"
+title: "The Java® Language Specification Front"
 description: ""
 summary: ""
 date: 2023-09-07T16:13:18+02:00
@@ -937,7 +937,7 @@ cast to int rounds toward 0: 12345 -12345
           }
       }
   }
-  
+
   public class Main {
       public static void main(String[] args) {
           Outer outer = new Outer();
@@ -1724,7 +1724,7 @@ class Example {
    ```java
    import java.util.ArrayList;
    import java.util.List;
-   
+
    public class SafeVarargsExample {
        @SafeVarargs
        public static void addToList(List<Integer>... lists) {
@@ -1732,7 +1732,7 @@ class Example {
                list.add(42);
            }
        }
-   
+
        public static void main(String[] args) {
            List<Integer> list1 = new ArrayList<>();
            List<Integer> list2 = new ArrayList<>();
@@ -1741,7 +1741,7 @@ class Example {
            System.out.println(list2); // [42]
        }
    }
-   
+
    ```
 
 
@@ -1761,13 +1761,13 @@ class Example {
      ```java
      public class MyClass {
          public static int classVariable; // 类变量
-     
+
          public static void main(String[] args) {
              MyClass.classVariable = 10; // 访问和修改类变量
              System.out.println(MyClass.classVariable);
          }
      }
-     
+
      ```
 
 
@@ -1783,12 +1783,12 @@ class Example {
      ```java
      public class MyClass {
          public int instanceVariable; // 实例变量
-  
+
          public MyClass() {
              this.instanceVariable = 20; // 实例变量在构造函数中初始化
          }
      }
-  
+
      ```
 
 3. **数组组件（Array Component）：**
@@ -1800,12 +1800,12 @@ class Example {
      ```java
      public class MyClass {
          public int[] array = new int[5]; // 数组声明
-     
+
          public MyClass() {
              array[0] = 1; // 初始化数组的第一个元素
          }
      }
-     
+
      ```
 
 
@@ -1824,7 +1824,7 @@ class Example {
              System.out.println(parameter);
          }
      }
-     
+
      ```
 
 
@@ -1840,12 +1840,12 @@ class Example {
      ```java
      public class MyClass {
          public int instanceVariable;
-     
+
          public MyClass(int constructorParameter) { // 构造器参数
              this.instanceVariable = constructorParameter;
          }
      }
-     
+
      ```
 
 
@@ -1860,7 +1860,7 @@ class Example {
 
      ```java
      import java.util.function.Consumer;
-     
+
      public class MyClass {
          public static void main(String[] args) {
              Consumer<Integer> lambda = (lambdaParameter) -> { // Lambda 参数
@@ -1869,7 +1869,7 @@ class Example {
              lambda.accept(30);
          }
      }
-     
+
      ```
 
 
@@ -1892,7 +1892,7 @@ class Example {
              }
          }
      }
-     
+
      ```
 
 
@@ -1912,7 +1912,7 @@ class Example {
              System.out.println(localVar);
          }
      }
-     
+
      ```
 
 
@@ -2440,20 +2440,20 @@ public class Test {
 
    ```java
    import java.util.List;
-   
+
    public class UncheckedConversionExample1 {
        public static void main(String[] args) {
            List<?> list = getList();
-   
+
            // Unchecked narrowing reference conversion
            List<String> stringList = (List<String>) list; // 编译器提示转换警告⚠
        }
-   
+
        static List<?> getList() {
            return List.of("One", "Two", "Three");
        }
    }
-   
+
    ```
 
 
@@ -2464,12 +2464,12 @@ public class Test {
    public class UncheckedConversionExample2 {
        public static void main(String[] args) {
            Object obj = "Hello";
-   
+
            // Unchecked narrowing reference conversion
            String str = (String) obj; // Warning generated
        }
    }
-   
+
    ```
 
 
@@ -2480,7 +2480,7 @@ public class Test {
    public class UncheckedConversionExample3 {
        public static void main(String[] args) {
            Object obj = "Hello";
-   
+
            // Unchecked narrowing reference conversion
            CharSequence charSequence = (CharSequence) obj; // Warning generated
        }
@@ -2501,7 +2501,7 @@ public class Test {
   ```java
   import java.util.ArrayList;
   import java.util.Collection;
-  
+
   public class UncheckedConversionExample {
       public static void main(String[] args) {
           ArrayList<String> stringList = new ArrayList<>();
@@ -2518,7 +2518,7 @@ public class Test {
   ```java
   import java.util.ArrayList;
   import java.util.Collection;
-  
+
   public class PartiallyUncheckedConversionExample {
       public static void main(String[] args) {
           Collection<?> collection = new ArrayList<>();
@@ -2542,7 +2542,7 @@ public class Test {
           String obj = (Object) null;
       }
   }
-  
+
   ```
 
 
@@ -2592,15 +2592,15 @@ public class Test {
       public class RuntimeCheckExample4 {
           public static void main(String[] args) {
               Object obj = new String[]{"One", "Two", "Three"};
-    
+
               // 有效的窄化引用转换
               String[] strArray = (String[]) obj;
-    
+
               // 无效的窄化引用转换，将抛出ClassCastException
               Integer[] intArray = (Integer[]) obj;
           }
       }
-    
+
       ```
 
   - 如果 R是接口：
@@ -3166,22 +3166,22 @@ public class StringContextExample {
 
 如果表达式是基元类型，则强制转换上下文 允许使用以下选项之一：
 
-- 标识转换 
-- 不断扩大的原始转换 
-- 缩小基元转换 
-- 变宽和变窄的原始转换 
-- 装箱转换 
-- 装箱转换后加宽参考转换 
+- 标识转换
+- 不断扩大的原始转换
+- 缩小基元转换
+- 变宽和变窄的原始转换
+- 装箱转换
+- 装箱转换后加宽参考转换
 
 如果表达式是引用类型，则为强制转换上下文 允许使用以下选项之一：
 
-- 标识转换 
-- 加宽参考转换 
+- 标识转换
+- 加宽参考转换
 - 加宽参考转换，然后进行拆箱转换
 - 加宽参考转换，然后进行拆箱转换， 然后是扩大的原始转换
-- 缩小参考转换 
+- 缩小参考转换
 - 缩小参考转换，然后进行拆箱转换
-- 拆箱转换 
+- 拆箱转换
 - 拆箱转换，然后是加宽基元转换
 
 如果表达式具有 null 类型，则可以强制转换表达式 添加到任何引用类型。
@@ -3310,6 +3310,9 @@ class NumericPromotionExample {
 >7
 >0.25
 >```
+
+
+
 
 
 
