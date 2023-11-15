@@ -367,6 +367,112 @@ Result table:
 
 
 
+### 分组中位数求法
+
+**要求：** 对数据进行查询中位数，如果不涉及多个我们很容易想到中位数求法.
+
+排序-> 偶数 取中间值 和中间值index-1的数
+
+   -> 奇数 取中间值
+
+那么在sql中就有一下解放：
+
+**方法1: 使用 `ORDER BY` 和 `LIMIT`（适用于小数据集）**
+
+```
+-- 假设表名为 your_table，列名为 your_column
+SELECT your_column
+FROM your_table
+ORDER BY your_column
+LIMIT 1
+OFFSET (SELECT COUNT(*) FROM your_table) / 2;
+```
+
+这个查询首先按照你要计算中位数的列进行升序排序，然后使用 `LIMIT` 和 `OFFSET` 选择中间的值。
+
+**方法2: 使用 `PERCENTILE_CONT` 函数**
+
+```
+-- 假设表名为 your_table，列名为 your_column
+SELECT
+  PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY your_column) OVER () AS median
+FROM
+  your_table;
+```
+
+这个查询使用 `PERCENTILE_CONT` 函数计算中位数。`0.5` 表示中位数，你可以根据需要调整百分比值。
+
+请注意，`PERCENTILE_CONT` 函数通常在 MySQL 8.0 版本及以上才可用。
+
+**方法3: 使用 `LIMIT` 和 `OFFSET` 的子查询**
+
+```
+-- 假设表名为 your_table，列名为 your_column
+SELECT your_column
+FROM your_table
+ORDER BY your_column
+LIMIT 1
+OFFSET (
+  SELECT (COUNT(*) - 1) / 2
+  FROM your_table
+);
+```
+
+如果要对分组之后的内容进行获取中位数，就没有那么简单了。不过，`PERCENTILE_CONT`函数也是可用优雅的解决。
+
+编写SQL查询来查找每个公司的薪水中位数。挑战点：你是否可以在不使用任何内置的SQL函数的情况下解决此问题。
+
+```
++-----+------------+--------+
+|Id   | Company    | Salary |
++-----+------------+--------+
+|1    | A          | 2341   |
+|2    | A          | 341    |
+|3    | A          | 15     |
+|4    | A          | 15314  |
+|5    | A          | 451    |
+|6    | A          | 513    |
+|7    | B          | 15     |
+|8    | B          | 13     |
+|9    | B          | 1154   |
+|10   | B          | 1345   |
+|11   | B          | 1221   |
+|12   | B          | 234    |
+|13   | C          | 2345   |
+|14   | C          | 2645   |
+|15   | C          | 2645   |
+|16   | C          | 2652   |
+|17   | C          | 65     |
++-----+------------+--------+
++-----+------------+--------+
+|Id   | Company    | Salary |
++-----+------------+--------+
+|5    | A          | 451    |
+|6    | A          | 513    |
+|12   | B          | 234    |
+|9    | B          | 1154   |
+|14   | C          | 2645   |
++-----+------------+--------+
+```
+
+>***Tip***
+>
+>```java
+>SELECT DISTINCT Id, Company, Salary
+>FROM (
+>    SELECT *, 
+>        ROW_NUMBER() over(PARTITION by Company ORDER BY Salary) rk,
+>        COUNT(1) over(PARTITION by Company) n
+>    FROM Employee
+>) t 
+>WHERE rk in (n/2, n/2+1, n/2+0.5)
+>```
+>
+>这个的解题思路就是采用普通的中位数解题。不同的是如何在分组中进行相关的操作。例如排序之类的。这时候就可用使用`ROW_NUMBER`窗口函数了
+
+
+
+
 ### 分组后排序非对结果排序
 
 **要求：** 再分组的基础上面，对每一个分组的内容进行排序，我们可以使用开窗函数来完成
