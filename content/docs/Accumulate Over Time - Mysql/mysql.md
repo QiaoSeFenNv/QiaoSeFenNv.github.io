@@ -366,6 +366,85 @@ Result table:
 
 
 
+### Sum Over 窗口中的排序，以及指定累加行数
+
+**要求：** 对分组排序后的结果，分组累加。但是要求只累加前当个行以及后两个行数。
+
+Employee 表保存了一年内的薪水信息。
+
+请你编写 SQL 语句，来查询一个员工三个月内的累计薪水，但是不包括最近一个月的薪水。
+
+结果请按 'Id' 升序，然后按 'Month' 降序显示。
+
+```diff
+示例：
+输入：
+
+| Id | Month | Salary |
+|----|-------|--------|
+| 1 | 1 | 20 |
+| 2 | 1 | 20 |
+| 1 | 2 | 30 |
+| 2 | 2 | 30 |
+| 3 | 2 | 40 |
+| 1 | 3 | 40 |
+| 3 | 3 | 60 |
+| 1 | 4 | 60 |
+| 3 | 4 | 70 |
+输出：
+
+| Id | Month | Salary |
+|----|-------|--------|
+| 1 | 3 | 90 |
+| 1 | 2 | 50 |
+| 1 | 1 | 20 |
+| 2 | 1 | 20 |
+| 3 | 3 | 100 |
+| 3 | 2 | 40 |
+```
+
+>***Tip：***
+>
+>这道题需要我们直到一个窗口函数的知识点，如何只要累加当前行数的以及当前行数的后两个。
+>
+>```sql
+>select id, month, sum(salary) over(partition by id order by Month  rows 2 preceding) as co from employee
+>where (id,month) not in (select id, max(month) as month from employee group by id)
+>ORDER BY id, month desc;
+>```
+>
+>代码解析：
+>
+>```mysql
+>select id, month, sum(salary) over(partition by id order by Month  ) as co from employee
+>where (id,month) not in (select id, max(month) as month from employee group by id)
+>```
+>
+>```
+>| id | month | co |
+>| 1 | 1 | 20 |
+>| 1 | 2 | 50 |
+>| 1 | 3 | 90 |
+>| 2 | 1 | 20 |
+>| 3 | 2 | 40 |
+>| 3 | 3 | 100 |
+>输出这样的结果。如果不添加'rows 2 preceding',它并会将每一个行累加前2个人。而且将之前都进行累加。你可以试试在表中添加'1''5''100'这样的值，运行就可以感受到效果了
+>```
+>
+>最后，我们来说一下排序。
+>
+>```mysql
+>select id, month, sum(salary) over(partition by id order by Month rows 2 preceding) as co from employee
+>where (id,month) not in (select id, max(month) as month from employee group by id)
+>ORDER BY id, month desc;
+>```
+>
+>我们也可以在排序完的结果之后在进行排序。对id，month进行排序。这样就可以得到我们想要的结果了
+>
+>摘自：[579.(Hard)查询员工的累计薪水](https://zqt0.gitbook.io/leetcode/sql/579.find-cumulative-salary-of-an-employee)
+
+
+
 
 ### 分组中位数求法
 
