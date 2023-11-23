@@ -830,3 +830,453 @@ public class CaseLabelExample {
 
 仔细学习这个知识点，然后对我进行深入和扩展教学
 
+
+
+
+
+
+
+### 6.4. Shadowing and Obscuring
+
+- 局部变量、形式参数、异常参数、局部类，或局部接口只能使用简单名称，而非限定名称进行引用。
+
+- 在局部变量声明、形式参数声明、异常参数声明、局部类声明、或局部接口声明的作用域内，某些声明是不允许的，因为仅使用简单名称无法区分这些声明的实体。
+
+  - 例如，如果一个方法的形式参数的名称在方法体内被重新声明为局部变量的名称，那么局部变量会遮蔽形式参数，这将导致无法引用形式参数，这是一个不良的结果。
+
+    ```java
+    public class ShadowingExample {
+    
+        // 方法的形式参数为 value
+        static void exampleMethod(int value) {
+            // 在方法体内重新声明局部变量 value
+            int value = 10;  // 这会导致编译时错误，因为局部变量遮蔽了形式参数
+            System.out.println("Local variable value: " + value);
+        }
+    
+        public static void main(String[] args) {
+            // 调用方法并传递一个值
+            exampleMethod(5);
+        }
+    }
+    
+    ```
+
+    
+
+- **编译时错误规则**：
+
+  - 如果形式参数的名称被用于在方法、构造函数或Lambda表达式的主体中声明新变量，除非新变量是在方法、构造函数或Lambda表达式内包含的类或接口声明中声明的，否则会导致编译时错误。
+
+  - 如果局部变量 `v` 的名称被用于在 `v` 的作用域内声明新变量，除非新变量是在 `v` 的作用域内出现的类或接口声明中声明的，否则会导致编译时错误。
+
+    ```java
+    class LocalVariableShadowingExample {
+    
+        public static void main(String[] args) {
+            int v = 5;
+    
+            // 下面的声明会导致编译时错误，因为局部变量 v 被重新声明了
+            int v = 10;
+            System.out.println("Local variable v: " + v);
+        }
+    }
+    
+    ```
+
+    
+
+  - 如果异常参数的名称被用于在 `catch` 子句的块中声明新变量，除非新变量是在 `catch` 子句的块内包含的类或接口声明中声明的，否则会导致编译时错误。
+
+    ```java
+    class ExceptionParameterShadowingExample {
+    
+        public static void main(String[] args) {
+            try {
+                // ...
+            } catch (Exception e) {
+                // 下面的声明会导致编译时错误，因为异常参数 e 被重新声明了
+                Exception e = new Exception("New Exception");
+                // 处理异常
+            }
+        }
+    }
+    
+    ```
+
+    
+
+  - 如果局部类或接口 `C` 的名称被用于在 `C` 的作用域内声明新的局部类或接口，除非新的局部类或接口是在 `C` 的作用域内出现的类或接口声明中声明的，否则会导致编译时错误。
+
+    ```java
+    class LocalClassShadowingExample {
+    
+        public static void main(String[] args) {
+            class C {
+                // ...
+            }
+    
+            // 下面的声明会导致编译时错误，因为局部类 C 被重新声明了
+            class C {
+                // ...
+            }
+        }
+    }
+    
+    ```
+
+>这些规则允许在变量、局部类或局部接口的作用域内发生在其内的嵌套类或接口声明中的重新声明；这样的嵌套类或接口声明可以是局部类或接口声明，也可以是匿名类声明。因此，形式参数、局部变量、局部类或局部接口的声明可能会在嵌套在方法、构造函数或Lambda表达式内的类或接口声明中被遮蔽；异常参数的声明可能会在嵌套在 `catch` 子句块内的类或接口声明中被遮蔽。
+
+- **名称冲突处理**：
+
+  - 有两种设计方案用于处理由Lambda表达式中的lambda参数和其他在lambda表达式中声明的变量引起的名称冲突。
+
+    - 一种是模仿类声明：像局部类一样，lambda表达式引入了新的“级别”，并且表达式外部的所有变量名都可以被重新声明。
+
+      ```java
+      static int externalVariable = 10;
+      
+          public static void main(String[] args) {
+              int localVariable = 5;
+      
+              // 模仿类声明的策略，lambda表达式引入新的“级别”，外部的变量名可以被重新声明
+              MyFunctionalInterface myLambda = (param) -> {
+                  int externalVariable = 20;  // 外部变量被重新声明
+                  System.out.println("Param: " + param);
+                  System.out.println("Local variable: " + localVariable);
+                  System.out.println("External variable: " + externalVariable);
+              };
+      
+              myLambda.myMethod(7);
+          }
+      
+          interface MyFunctionalInterface {
+              void myMethod(int param);
+          }
+      ```
+
+      
+
+    - 另一种是“本地”策略：像 `catch` 子句、`for` 循环和块一样，lambda表达式在与封闭上下文相同的“级别”上运行，表达式外部的局部变量不能被遮蔽。
+
+      ```java
+      class LambdaExpressionLocalStrategy {
+      
+          static int externalVariable = 10;
+      
+          public static void main(String[] args) {
+              int localVariable = 5;
+      
+              // “本地”策略，lambda表达式在与封闭上下文相同的“级别”上运行，外部的局部变量不能被遮蔽
+              MyFunctionalInterface myLambda = (param) -> {
+                  // 下面的声明会导致编译时错误，因为外部的局部变量 localVariable 不能被遮蔽
+                  int localVariable = 20;
+                  System.out.println("Param: " + param);
+                  System.out.println("Local variable: " + localVariable);  // 无法访问外部的局部变量
+                  System.out.println("External variable: " + externalVariable);
+              };
+      
+              myLambda.myMethod(7);
+          }
+      
+          interface MyFunctionalInterface {
+              void myMethod(int param);
+          }
+      }
+      
+      ```
+
+      
+
+>上述规则使用了“本地”策略；没有特殊规定允许在lambda表达式中声明的变量遮蔽在封闭方法中声明的变量。
+
+**示例 6.4-1. 尝试遮蔽局部变量**
+
+由于将标识符声明为方法、构造函数或初始化块的局部变量不能出现在具有相同名称的参数或局部变量的作用域内，因此以下程序会导致编译时错误：
+
+```java
+class Test1 {
+    public static void main(String[] args) {
+        int i;
+        for (int i = 0; i < 10; i++)
+            System.out.println(i);
+    }
+}
+```
+
+这种限制有助于检测一些其他非常难以发现的错误。类似地，对局部变量由于成员变量的阴影化的限制被认为是不切实际的，因为在超类中添加成员可能会导致子类必须重新命名局部变量。相关的考虑使得对由嵌套类中的成员对局部变量的阴影化或由嵌套类中声明的局部变量对局部类的阴影化的限制同样不吸引人。
+
+因此，以下程序可以无错误编译：
+
+```java
+class Test2 {
+    public static void main(String[] args) {
+        int i;
+        class Local {
+            {
+                for (int i = 0; i < 10; i++)
+                    System.out.println(i);
+            }
+        }
+        new Local();
+    }
+}
+```
+
+另一方面，具有相同名称的局部变量可以在两个不相交的块或for语句中声明，其中一个不包含另一个：
+
+```java
+class Test3 {
+    public static void main(String[] args) {
+        for (int i = 0; i < 10; i++)
+            System.out.print(i + " ");
+        for (int i = 10; i > 0; i--)
+            System.out.print(i + " ");
+        System.out.println();
+    }
+}
+```
+
+这个程序可以无错误编译，执行时产生输出：
+
+```
+0 1 2 3 4 5 6 7 8 9 10 9 8 7 6 5 4 3 2 1
+```
+
+这种风格在模式匹配中也很常见，其中重复的模式经常使用相同的名称：
+
+```java
+class Point {
+    int x, y;
+    Point(int x, int y) { this.x = x; this.y = y; }
+}
+
+class Test4 {
+    static void test(Object a, Object b, Object c) {
+        if (a instanceof Point p) {
+            System.out.println("a is a point ("+p.x+","+p.y+")");
+        }
+        if (b instanceof Point p){
+            System.out.println("b is a point ("+p.x+","+p.y+")");
+        } else if (c instanceof Point p) {
+            System.out.println("c is a point ("+p.x+","+p.y+")");
+        }
+    }
+
+    public static void main(String[] args) {
+        Point p = new Point(2,3);
+        Point q = new Point(4,5);
+        Point r = new Point(6,7);
+        test(p, q, r);
+    }
+}
+```
+
+然而，模式变量不被允许遮蔽局部变量，包括其他模式变量，因此以下程序会导致两个编译时错误：
+
+```java
+class Point {
+    int x, y;
+    Point(int x, int y) { this.x = x; this.y = y; }
+}
+
+class Test5 {
+    static void test(Object a, Object b, Object c) {
+        if (a instanceof Point p) {
+            System.out.println("a is a point ("+p.x+","+p.y+")");
+	    
+            if (b instanceof Point p) {  // 编译时错误
+                System.out.println("b is a point ("+p.x+","+p.y+")"); 
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Point p = new Point(2,3);
+        Point q = new Point(4,5);
+        Point r = new Point(6,7);
+        test(p, q, r);
+
+        if (new Object() instanceof Point q)  // 编译时错误
+            System.out.println("I get your point");
+    }
+}
+```
+
+
+
+
+
+#### **6.4.1. 遮蔽**
+
+某些声明可能在其范围的一部分被另一个同名声明所遮蔽，在这种情况下，简单名称无法用于引用已声明的实体。
+
+```java
+public class ShadowingExample {
+    // 类级别的变量声明
+    static int x = 10;
+
+    public static void main(String[] args) {
+        // 方法级别的变量声明，遮蔽了类级别的变量
+        int x = 5;
+
+        System.out.println("Local variable x: " + x); // 引用方法级别的变量
+        System.out.println("Class variable x: " + ShadowingExample.x); // 引用类级别的变量
+    }
+}
+
+```
+
+>在这个例子中，类 `ShadowingExample` 中有一个类级别的变量 `x`，而在 `main` 方法中又声明了一个同名的方法级别的变量 `x`。方法级别的变量遮蔽了类级别的变量，因此在方法中，简单名称 `x` 引用的是方法级别的变量，而要引用类级别的变量，需要使用类名限定，即 `ShadowingExample.x`。这种现象被称为"遮蔽"。
+
+遮蔽与隐藏是不同的，后者仅适用于本应被继承但由于子类中的声明而未继承的成员。遮蔽还与混淆不同。
+
+- 名为n的类型的 声明d会隐藏在整个d范围内d出现的范围内的任何其他名为n的类型的声明。
+- 名为n的字段或形式参数的 声明d在整个d范围内，会影响d出现时范围内名为n的任何其他变量的声明。
+- 名为n的局部变量或异常参数的 声明d在整个d范围内，(a) 在d出现的范围内的任何其他名为n的字段的声明，以及 (b) 任何其他名为n的变量在d出现的位置范围内，但未在声明 d 的最内层类中声明*。*
+- 名为n的方法的 声明d会隐藏任何其他名为n的方法的声明，这些方法位于d在整个d范围内出现的封闭范围内。
+- 包声明永远不会遮蔽任何其他声明。
+- 按需类型导入声明永远不会导致任何其他声明被隐藏。
+- 按需静态导入声明永远不会导致任何其他声明被隐藏。
+- 略【理解有点难度，超越作者水平。具体内容请查阅官方文档】
+
+**示例 6.4.1-1. 通过局部变量声明遮蔽字段声明**
+
+```java
+class Test {
+    static int x = 1;
+    public static void main(String[] args) {
+        int x = 0;
+        System.out.print("x=" + x);
+        System.out.println(", Test.x=" + Test.x);
+    }
+}
+```
+
+该程序输出：
+
+```
+x=0, Test.x=1
+```
+
+这个程序声明了：
+
+- 一个类 `Test`
+- 一个类（静态）变量 `x` 是类 `Test` 的成员
+- 一个类方法 `main` 是类 `Test` 的成员
+- `main` 方法的参数 `args`
+- `main` 方法的局部变量 `x`
+
+由于类变量 `x` 的范围包括整个类的主体，类变量 `x` 通常应在方法 `main` 的整个主体中可用。然而，在这个例子中，类变量 `x` 在方法 `main` 的主体内被局部变量 `x` 的声明遮蔽。
+
+这意味着：
+
+- 在打印的调用中的表达式 `x` 引用（表示）局部变量 `x` 的值。
+- println 的调用使用了合格名称Test.x，它使用类类型名称 `Test` 来访问类变量 `x`，因为此时类变量 `Test.x` 的声明已经被遮蔽，并且不能通过其简单名称引用。
+- 关键字 `this` 也可以用于访问被遮蔽的字段 `x`，使用形式 `this.x`。事实上，在构造函数中（§8.8）中，这种惯用法通常出现：
+
+```java
+class Pair {
+    Object first, second;
+    public Pair(Object first, Object second) {
+        this.first = first;
+        this.second = second;
+    }
+}
+```
+
+在这里，构造函数使用与要初始化的字段相同的名称作为参数。这比为参数发明不同的名称更简单，在这种风格化的上下文中并不太令人困扰。然而，一般来说，在局部变量与字段具有相同名称的情况下是不良风格的。
+
+**示例 6.4.1-2. 通过类型声明遮蔽另一个类型声明**
+
+```java
+import java.util.*;
+
+class Vector {
+    int[] val = { 1 , 2 };
+}
+
+class Test {
+    public static void main(String[] args) {
+        Vector v = new Vector();
+        System.out.println(v.val[0]);
+    }
+}
+```
+
+该程序编译并打印：
+
+```diff
+1
+```
+
+它使用了此处声明的类 `Vector`，而不是可能被按需导入的通用类 `java.util.Vector`。
+
+
+
+
+
+#### 6.4.2. 遮蔽
+
+在某些情境中，一个简单的名称可能会被解释为**变量、类型或包的名称**。在这些情况下，规则指定将优先选择变量而不是类型，并且将优先选择类型而不是包。因此，有时可能无法通过其简单名称引用类型或包，即使其声明在范围内且未被遮蔽。我们称这样的声明为被遮蔽。
+
+>变量>类型>包
+
+遮蔽与阴影和隐藏是不同的。
+
+模块名称与变量、类型或包的名称之间不存在遮蔽；因此，模块可以与变量、类型和包共享名称，尽管不一定建议将模块命名为其包含的包。
+
+果确实发生了遮蔽，以下是一些建议，可以避免它
+
+**当表达式中出现包名称时：**
+
+- 如果包名称被字段声明遮蔽，那么导入声明通常可以用来使该包中声明的类型名称可用。
+- 如果包名称被参数或局部变量的声明遮蔽，那么可以更改参数或局部变量的名称而不影响其他代码。
+
+包名称的第一个组件通常不容易被误认为是类型名称，因为类型名称通常以单个大写字母开头。（Java编程语言实际上不依赖大小写区分来确定名称是包名称还是类型名称。）
+
+涉及类和接口类型名称的遮蔽很少见。字段、参数和局部变量的名称通常不会遮蔽类型名称，因为它们惯例上以小写字母开头，而类型名称惯例上以大写字母开头。
+
+**涉及字段名称的遮蔽很少见，然而：**
+
+- 如果字段名称遮蔽了包名称，那么导入声明通常可以用来使该包中声明的类型名称可用。
+- 如果字段名称遮蔽了类型名称，那么可以使用类型的完全限定名称，除非类型名称表示本地类或接口（§14.3）。
+
+**字段名称不能遮蔽方法名称:**
+
+如果字段名称被参数或局部变量的声明遮蔽，那么可以更改参数或局部变量的名称而不影响其他代码。
+
+**涉及常量名称的遮蔽很少见：**
+
+- 常量名称通常不包含小写字母，因此它们通常不会遮蔽包或类型的名称，也不会遮蔽字段，其名称通常至少包含一个小写字母。
+- 常量名称不能遮蔽方法名称，因为它们在语法上有所区别。
+
+>总结：
+>
+>1. **名称冲突与遮蔽（Obscuring）：**
+>   - 避免在不同上下文中使用相同的名称，以防止变量、类型或包之间的冲突。
+>   - 注意命名约定（§6.1）以减少遮蔽，避免使用与包、类型或变量相似的名称。
+>2. **导入声明（Import Declarations）：**
+>   - 使用导入声明（§7.5）来处理在字段声明中遮蔽的包名，以便在代码中使用该包中声明的类型名称。
+>3. **包名与类型名的区分：**
+>   - 注意包名和类型名的首字母约定，通常类型名以大写字母开头，而包名以小写字母开头。这有助于在代码中清晰地区分它们。
+>4. **类和接口类型名称的遮蔽：**
+>   - 遮蔽类和接口类型名称的情况相对较少，但要注意字段、参数和局部变量的命名规范，以避免与类型名称冲突。
+>5. **方法名与其他名称的区分：**
+>   - 方法名不能遮蔽或被其他名称遮蔽，这提供了一种清晰的语法区分。注意在方法命名中保持清晰和有意义。
+>6. **字段名的使用：**
+>   - 避免字段名与包名或类型名发生遮蔽，可使用导入声明解决这些冲突。
+>   - 如果字段名与类型名发生遮蔽，可以使用类型的完全限定名称，除非类型名称表示本地类或接口。
+>7. **常量名的使用：**
+>   - 常量名通常不包含小写字母，因此不太容易与包或类型的名称发生遮蔽。
+>   - 常量名与方法名在语法上有明显的区别，因此不会发生遮蔽
+
+
+
+
+
+
+
+
+
+仔细学习这个知识点，然后对我进行深入和扩展教学
