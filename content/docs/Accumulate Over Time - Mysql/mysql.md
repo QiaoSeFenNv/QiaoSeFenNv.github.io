@@ -779,6 +779,73 @@ IF(condition, value_if_true, value_if_false)
 
 
 
+
+## distanct 去重多字段
+
+**要求：** 分组去重 = 多字段去重
+
+```mysql
+FriendRequest 表：
++-----------+------------+--------------+
+| sender_id | send_to_id | request_date |
++-----------+------------+--------------+
+| 1         | 2          | 2016/06/01   |
+| 1         | 3          | 2016/06/01   |
+| 1         | 4          | 2016/06/01   |
+| 2         | 3          | 2016/06/02   |
+| 3         | 4          | 2016/06/09   |
++-----------+------------+--------------+
+
+RequestAccepted 表：
++--------------+-------------+-------------+
+| requester_id | accepter_id | accept_date |
++--------------+-------------+-------------+
+| 1            | 2           | 2016/06/03  |
+| 1            | 3           | 2016/06/08  |
+| 2            | 3           | 2016/06/08  |
+| 3            | 4           | 2016/06/09  |
+| 3            | 4           | 2016/06/10  |
++--------------+-------------+-------------+
+
+Result 表：
++-------------+
+| accept_rate |
++-------------+
+| 0.8         |
++-------------+
+总共有 5 个请求，有 4 个不同的通过请求，所以通过率是 0.80
+```
+
+>***Tip***
+>
+>简单看很容易想到，他想统计每一个`requester_id`中不同的`accepter_id`个数，容易出写：
+>
+>```mysql
+>SELECT COUNT(DISTINCT accepter_id) as num FROM RequestAccepted GROUP BY requester_id
+>
+>SELECT COUNT(DISTINCT send_to_id ) as mu1 FROM FriendRequest GROUP BY sender_id
+>```
+>
+>写出这个接下里就是在写一个查询，将两个查询作为子查询即可，解出答应。但是，我们也可以使用`DISTINCT`对多个字段进行去重，效果也是一样的
+>
+>最终实现sql：
+>
+>```mysql
+>select 
+>    round(
+>        ifnull(
+>            (select count(distinct requester_id, accepter_id) from RequestAccepted)/
+>            (select count(distinct sender_id, send_to_id) from FriendRequest)
+>        ,0)
+>    ,2) accept_rate
+>```
+>
+>**摘自：**[好友申请 I：总体通过率](https://zqt0.gitbook.io/leetcode/sql/597.friend-requests-i-overall-acceptance-rate)
+
+
+
+
+
 ## 元组一致比较
 
 - 这个方法比较少见（可能是我写的Sql写太少了吧）,`(字段，字段) in ( 字段、字段)` 这是一个条件，它检查主查询中的元组是否在子查询的结果集中。如果是，则返回相应的行。
