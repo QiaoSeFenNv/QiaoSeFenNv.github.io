@@ -1936,6 +1936,40 @@ Bob 注册了 207 赛事，注册率为 ((1/3) * 100) = 33.33%
 
 
 
+## Sqrt 和 Pow函数
+
+**要求：** 在sql数据中，计算两点最短距离
+
+```
+写一个查询语句找到两点之间的最近距离，保留 2 位小数。
+
+| x  | y  |
+|----|----|
+| -1 | -1 |
+| 0  | 0  |
+| -1 | -2 |
+复制
+最近距离在点 (-1,-1) 和(-1,2) 之间，距离为 1.00 。所以输出应该为：
+
+| shortest |
+|----------|
+| 1.00     |
+```
+
+>***Tip***
+>
+>这道题考察的是三角形的数学问题，以及笛卡尔积问题。应该算是一道简单题，才是。
+>
+>```mysql
+>select round(sqrt(min(pow(abs(a.x-b.x),2)+pow(abs(a.y-b.y),2))),2) shortest
+>from point_2d a left join point_2d b on (a.x,a.y) != (b.x,b.y); --除自己之外的笛卡尔积
+>```
+>
+>**摘自：** [612.(Medium)平面上的最近距离](https://zqt0.gitbook.io/leetcode/sql/612.shortest-distance-in-a-plane)
+
+
+
+
 
 
 ## mysql字符串函数
