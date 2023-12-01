@@ -2159,5 +2159,151 @@ SQL mode 列表，如下
 
 
 
+### Three-逻辑分析 ≈ 窗口函数
+
+通过一步一步拆分逻辑，编写sql，也可以写出窗口函数的效果
+
+给如下两个表，写一个查询语句，求出在每一个工资发放日，每个部门的平均工资与公司的平均工资的比较结果 （高 / 低 / 相同）。
+
+```diff
+表： salary
+| id | employee_id | amount | pay_date   |
+|----|-------------|--------|------------|
+| 1  | 1           | 9000   | 2017-03-31 |
+| 2  | 2           | 6000   | 2017-03-31 |
+| 3  | 3           | 10000  | 2017-03-31 |
+| 4  | 1           | 7000   | 2017-02-28 |
+| 5  | 2           | 6000   | 2017-02-28 |
+| 6  | 3           | 8000   | 2017-02-28 |
+
+employee_id 字段是表 employee 中 employee_id 字段的外键。
+
+| employee_id | department_id |
+|-------------|---------------|
+| 1           | 1             |
+| 2           | 2             |
+| 3           | 2             |
+
+对于如上样例数据，结果为：
+
+| pay_month | department_id | comparison  |
+|-----------|---------------|-------------|
+| 2017-03   | 1             | higher      |
+| 2017-03   | 2             | lower       |
+| 2017-02   | 1             | same        |
+| 2017-02   | 2             | same        |
+
+解释
+在三月，公司的平均工资是 (9000+6000+10000)/3 = 8333.33…
+由于部门 ‘1’ 里只有一个 employee_id 为 ‘1’ 的员工，
+ 所以部门 ‘1’ 的平均工资就是此人的工资 9000 。
+ 因为 9000 > 8333.33 ，所以比较结果是 ‘higher’。
+
+第二个部门的平均工资为 employee_id 为 ‘2’ 和 ‘3’ 两个人的平均工资，为 (6000+10000)/2=8000 。
+ 因为 8000 < 8333.33 ，所以比较结果是 ‘lower’ 。
+
+在二月用同样的公式求平均工资并比较，比较结果为 ‘same’ ，
+ 因为部门 ‘1’ 和部门 ‘2’ 的平均工资与公司的平均工资相同，都是 7000 。
+```
+
+>分析：
+>
+>我们可以先计算出公司每月金额平均值
+>
+>```mysql
+> SELECT 
+>        SUBSTR(s1.pay_date, 1, 7) AS month,
+>        AVG(s1.amount) AS avg_salary
+>    FROM 
+>        salary AS s1
+>    GROUP BY 
+>        SUBSTR(s1.pay_date, 1, 7)
+>```
+>
+>接着，我们要查询出，每月每部门的信息。
+>
+>```java
+>SELECT 
+>    SUBSTR(salary.pay_date, 1, 7) AS pay_month,
+>    employee.department_id AS department_id
+>FROM
+>    employee
+>LEFT JOIN
+>    salary USING (employee_id)
+>
+>GROUP BY 
+>    department_id, SUBSTR(salary.pay_date, 1, 7);
+>
+>```
+>
+>有了这些信息开始组合sql，使用`case when`条件判断来输出higher、lower状态
+>
+>```mysql
+>SELECT 
+>    SUBSTR(salary.pay_date, 1, 7) AS pay_month,
+>    employee.department_id AS department_id,
+>    (
+>        CASE
+>            WHEN avg(salary.amount) > avg_amount.avg_salary THEN 'higher'
+>            WHEN avg(salary.amount) < avg_amount.avg_salary THEN 'lower'
+>            ELSE 'same'
+>        END
+>    ) AS comparison
+>FROM
+>    employee
+>LEFT JOIN
+>    salary USING (employee_id)
+>JOIN (
+>    SELECT 
+>        SUBSTR(s1.pay_date, 1, 7) AS month,
+>        AVG(s1.amount) AS avg_salary
+>    FROM 
+>        salary AS s1
+>    GROUP BY 
+>        SUBSTR(s1.pay_date, 1, 7)
+>) AS avg_amount ON SUBSTR(salary.pay_date, 1, 7) = avg_amount.month
+>GROUP BY 
+>    department_id, SUBSTR(salary.pay_date, 1, 7);
+>
+>```
+>
+>当然，还有一个更好的解法：
+>
+>```mysql
+>
+>SELECT DISTINCT
+>	pay_month,
+>	department_id,
+>CASE
+>		
+>		WHEN dep_avg > total_avg THEN
+>		'higher' 
+>		WHEN dep_avg = total_avg THEN
+>		'same' ELSE 'lower' 
+>	END AS comparison 
+>FROM
+>	(# 平均部门工资, 公司平均工资
+>	SELECT
+>		department_id,
+>		avg( amount ) over (
+>			PARTITION BY department_id,
+>		date_format( pay_date, "%Y-%m" )) dep_avg,
+>		date_format( pay_date, "%Y-%m" ) pay_month,
+>		avg( amount ) over (
+>		PARTITION BY date_format( pay_date, "%Y-%m" )) total_avg 
+>	FROM
+>		salary s
+>	LEFT JOIN employee USING ( employee_id ) 
+>	) t
+>```
+>
+>其实，会发现窗口函数的出来的逻辑和连接表查询时差不多的。只不过写法简单。
+>
+>摘自：[615. 平均工资：部门与公司比较](https://cloud.tencent.com/developer/article/1787908)
+
+
+
+
+
 
 
