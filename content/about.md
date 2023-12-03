@@ -10,10 +10,3 @@ type: "about"
 
 
 
-
-
-# hello
-
-## about me
-
-i like you

@@ -10,6 +10,11 @@
   weight = 20
 
 [[main]]
+  name = "Schedule"
+  url = "/schedule/schedule.html"
+  weight = 30
+
+[[main]]
   name = "About"
   url = "/about/"
   weight = 50
