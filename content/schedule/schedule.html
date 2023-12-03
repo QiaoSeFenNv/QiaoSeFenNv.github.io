@@ -1,0 +1,691 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Java程序员学习路线图_黑马程序员2023版java学习路线</title>
+  <meta name="keywords" content="Java学习路线图" />
+  <meta name="description" content="Java学习路线图2023版全网首发，6个月6大阶段，精通Java的必备干货，高效学习java看2023版java学习线路图。" />
+  <link rel="stylesheet" type="text/css" href="./css/reset.css"/>
+  <link rel="stylesheet" type="text/css" href="./css/style.css?20220519"/>
+</head>
+<body>
+<div class="wrap">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <script type="text/Javascript" src="/js/jquery-1.11.1.min.js"></script>
+  <script type="text/Javascript" src="/js/jssdk-min.js"></script>
+  <div style="display:none"><script type="text/javascript" src="https://s4.cnzz.com/z_stat.php?id=1261487506&web_id=1261487506"></script></div>
+
+  <link rel="stylesheet" type="text/css" href="https://www.itheima.com/css/zx.css"/>
+
+  <style>
+
+    .zx{right: 12px;}
+    .zx .cxhdpic3{
+      position: absolute;
+      right: 0 !important;
+      top: -138px !important;
+      z-index: 99999;
+      width: 123px !important;
+      display: none;
+    }
+    .zx img{
+      display: block;
+      width:100%;
+    }
+
+    .returnmap{display: none;}
+
+    .header{
+      width: 93%;
+      height: 80px;
+      box-shadow: 0 3px 9px rgb(228,228,228,.3);
+      padding: 0 3.5%;
+    }
+    .header h2{
+      float: left;
+      width: 150px;
+      margin: 20px 0 0 0;
+    }
+    .header .fl{
+      float: left;
+      width: 500px;
+      margin: 30px 0 0 38px;
+    }
+    .header .fl li{
+      position: relative;
+      float: left;
+      margin-right: 22px;
+    }
+    .header .fl li:last-child{margin-right: 0;}
+    .header .fl li a{
+      display: block;
+      height: 46px;
+      font-size: 16px;
+      color: #474747;
+    }
+    .header .fl li a:hover{color: #d5221e;}
+    .header .fl li a.nav_on{
+      color: #d5221e;
+      border-bottom: 4px #d5221e solid;
+    }
+    .header .fdnav{display: none;position:absolute;left: -160px; top:50px; width:444px;background: rgba(255,255,255,1);box-shadow: 0 0 10px rgba(0,0,0,.1); z-index: 100;overflow: hidden;}
+    .header .fdnav .fdnav_main{width:444px; margin:0 auto; padding: 1px 0 0;overflow: hidden;}
+    .header .fdnav .fdnav_main p{float:left; width: 220px;height: 64px;border-right: 1px #fefefe solid;border-bottom: 1px #fefefe solid;}
+    .header .fdnav .fdnav_main p.jcdl_icon{width: 300px;}
+    .header .fdnav .fdnav_main p a{display: block; width:auto;}
+    .header .fdnav .fdnav_main p img{display: block; margin:0 auto;float: left;margin-right: 10px;width: 22px;}
+    .header .fdnav .fdnav_main p span{float: left;color: #7b7b7b;margin-right: 0;font-size:14px;line-height: 64px;}
+    .header .fdnav .fdnav_main p.twolin span{line-height: 20px;}
+    .header .fdnav .fdnav_main p.li_last{border-right:0;}
+    .header .fdnav .fdnav_main p:hover span{color: #d50212;}
+    .header .fdnav .fdnav_main p em{float: left;width: 36px;margin: 14px 6px 0 18px;height: 36px;border-radius: 50%;}
+    .header .fdnav .fdnav_main p em img{width: 100%;}
+    .header .fdnav .fdnav_main p.java_icon em{margin-top: 10px;}
+    .header .fl li:hover .fdnav{display: block;}
+
+    .header .head_sub{float: right;width: 328px;height: 38px;border: 1px #dee0ea solid;border-radius: 5px;margin: 20px 0 0 90px;}
+    .header .head_sub .head_tit{width: 100%;height: 100%;position: relative;}
+    .header .head_sub .head_tit b{float: left;width: 85px;height: 26px;line-height: 26px;margin-top: 6px;border-right: 1px #ededed solid;font-size: 15px;color: #828282;text-align: center;font-weight: 100;}
+    .header .head_sub .head_tit p{font-size: 15px;color: #929292;float: left;line-height: 38px;padding-left: 10px;width: 212px;cursor: pointer;}
+    .header .head_sub .head_tit p img{position: absolute;width: 8px;right: 12px;top: 17px;}
+    .header .head_sub .head_tit .xqalls{position: absolute;padding: 5px 0 5px 10px;width: 320px;max-height: 150px;border: 1px #dee0ea solid;border-top: none;left: -1px;top: 36px;background: #fff;overflow-y: auto;z-index: 6;display: none;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;}
+    .header .head_sub .head_tit .xqalls ul li{line-height: 30px;}
+    .header .head_sub .head_tit .xqalls ul li a{font-size: 14px;color: #838383;display: block;width: 100%;}
+    .header .head_sub .head_tit .xqalls ul li a:hover{color: #216ef4;}
+    .header .head_sub .head_tit .xqalls::-webkit-scrollbar {width: 5px;height: 1px;}
+    .header .head_sub .head_tit .xqalls::-webkit-scrollbar-thumb {width: 5px;border-radius: 5px;background: #216ef4;}
+    .header .head_sub .head_tit .xqalls::-webkit-scrollbar-track{width: 5px;height: 1px;}
+    .header .head_sub:hover .head_tit b{display: none;}
+    .header .head_sub:hover .head_tit .xqalls{display: block;}
+
+    .banjava{
+      background: url("/subject/javamap/images/ewm3.jpg") no-repeat right center;
+      background-size: 480px;
+      padding: 40px 0 50px;
+      width: 93%;
+      margin: 0 auto;
+    }
+    .banjava h2{
+      font-size: 24px;
+      color: #151515;
+      font-weight: bold;
+    }
+    .banjava h2 span{
+      font-size: 28px;
+    }
+
+    .banjava p span{
+      display: inline-block;
+      height: 37px;
+      font-size: 18px;
+      color: #fff;
+      line-height: 37px;
+      border-radius: 19px;
+      background: #0cc7a5;
+      padding: 0 18px;
+      margin: 15px 0 0 0;
+    }
+    .box ul li{background: #fff;}
+    .box ul li .boxlidiv{background: #f5f9ff;padding-bottom: 16px;}
+    .box ul li h3 span.no{display: none;}
+    .box ul li h3 span.no2{display: none;}
+
+    .box ul li .boxbot2{
+      border-radius: 10px;
+      box-shadow: inset 0 0 50px rgba(175,214,249,.56);
+      background: #f5f9ff;
+      margin-top: 24px;
+      padding: 28px 25px;
+    }
+    .box ul li .boxbot2 h4{
+      font-size: 14px;
+      color: #000;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .box ul li .boxbot2 span{
+      display: block;
+      font-size: 12px;
+      color: #000;
+      line-height: 22px;
+    }
+
+    .box ul li .boxa{
+      overflow: hidden;
+      padding: 0 0 15px;
+    }
+    .box ul li .boxa span{
+      color: #fff;
+      font-weight: bold;
+      background: #0cc7a5 url("/subject/javamap/images/pcdbg1.jpg") no-repeat right bottom;
+      padding: 8px 6%;
+    }
+    .box ul li .boxa a{
+      width: 89%;
+      color: #000;
+      box-sizing: border-box;
+      line-height: 16px;
+      font-weight: normal;
+      border-bottom: 1px #0cc7a5 dashed;
+      overflow: hidden;
+      padding: 12px 0 12px 40px;
+      margin: 0 auto;
+    }
+    .box ul li .boxa a:before{
+      left: 0;
+      top: 50%;
+      width: 35px;
+      height: 35px;
+      background: url("/subject/javamap/images/pcdvid1.jpg") no-repeat 0 0;
+      margin-top: -17.5px;
+    }
+    .box ul li .boxa a:hover{color: #0cc7a5;}
+    .box ul li img.pc{display: block;max-width: 236px;margin: 30px auto 0;}
+    .box ul li img.yd{display: none;}
+
+    .box ul li .boxa a i{display: block;}
+    @media screen and (max-width: 1650px){
+      .banjava{background-size: 394px;padding: 35px 0 40px;}
+    }
+    @media screen and (max-width: 500px){
+      .wrap{overflow: hidden;}
+      .zx{display: none;}
+      body {min-width:100%}
+      .ban h2 {font-size: 1.3rem;padding: 0 20px 0 0;}
+      .ban h2 em{display: block;}
+      .ban h2 span{display: inline-block;}
+      .ban p {font-size: .9rem;padding: 0 3%;}
+      .ban {padding: 30px 0;}
+      .ban h2 i {right: -55px;top: -10px;width: 50px;}
+      .box ul li {float: none;width: 98.1% !important;margin: 0 1% 5%;}
+      .box ul li:after,.header .fl {display:none}
+      .boxbotmain {width: 92%;min-width: auto; padding-right: 10px;}
+      .header h2 {width: 102px;margin: 25px 0 0 13px;}
+      .header .head_sub {position: absolute;right: 4%;width: 186px;}
+      .header .head_sub .head_tit b{font-size: .9rem;width: 68px;margin-right: 5px;display:none}
+      .header .head_sub .head_tit p{font-size: .9rem;float:none;width:auto;}
+      .header .head_sub .head_tit .xqtop{width: 90%;height: 38px;overflow: hidden;}
+      .header .head_sub .head_tit .xqalls {width: 176px;}
+      .boxbotmain p span.span2{width: 76%;}
+
+      .banjava{background: none;padding: 30px 0;}
+      .banjava h2{font-size: 19px;text-align: center;}
+      .banjava h2 span{font-size: 22px;display: block;}
+      .banjava p{
+        width: 88%;
+        background: #caf3eb;
+        border-radius: 50px;
+        text-align: center;
+        margin: 15px auto 0;
+      }
+      .banjava p span{
+        width: 90%;
+        height: auto;
+        font-size: 15px;
+        text-align: center;
+        line-height: 22px;
+        border-radius: 50px;
+        background: -moz-linear-gradient(to bottom , #0cc7a5, #08ad8f);
+        background: linear-gradient(to bottom, #0cc7a5,#08ad8f);
+        padding: 7px 0;
+        margin: 0;
+      }
+      .banjava p span em{display: block;opacity: 0;height: 0;}
+      .box ul li .boxlidiv{padding-bottom: 0;}
+      /* .box ul li{background: #f5f9ff;} */
+      .box ul li h3 span{display: inline !important;}
+      .box ul li h3 span.no2{font-size: 14px;}
+      .box ul li.boxli5 h3{line-height: 60px;}
+      .box ul li .boxa a i{display: inline;}
+      .box ul li .boxa{padding: 20px 4% 15px}
+      .box ul li .boxa span{
+        font-size: 17px;
+        color: #000;
+        font-weight: bold;
+        background: none;
+        padding: 0;
+      }
+      .box ul li .boxa a{
+        width: 100%;
+        font-size: 14px;
+        color: #fff;
+        font-weight: bold;
+        line-height: 1.4rem;
+        border-bottom: none;
+        box-sizing: border-box;
+        border-radius: 10px;
+        background: #fca356 url("/subject/javamap/images/yddbg1.jpg") no-repeat right bottom;
+        background-size: 60%;
+        overflow: hidden;
+        margin: .8rem 0 0 0;
+        padding: 17px 4% 17px 22%;
+      }
+      .box ul li .boxa a:hover{color: #fff;}
+      .box ul li .boxa a:before{
+        left: 4.5%;
+        top: 50%;
+        width: 45px;
+        height: 45px;
+        background: url("/subject/javamap/images/yddvid1.jpg") no-repeat;
+        background-size: 100%;
+        margin-top: -22.5px;
+      }
+      .box ul li .boxa a:nth-child(odd){background: #89bf6b url("/subject/javamap/images/yddbg2.jpg") no-repeat right bottom;background-size: 62%;}
+      .box ul li .boxa a:nth-child(odd):before{background-image: url("/subject/javamap/images/yddvid2.jpg")}
+      .box ul li img.pc{display: none;}
+      .box ul li img.yd{display: block;padding-top: 30px;background: #fff;}
+      .returnmap{
+        position: fixed;
+        left: 0;
+        top: 70%;
+        font-size: 13px;
+        color: #fff;
+        height: 25px;
+        line-height: 25px;
+        border-radius: 0 12px 12px 0;
+        background: rgba(63,166,255,.8);
+        padding: 0 16px 0 20px;
+        z-index: 10;
+      }
+      .returnmap:before{
+        position: absolute;
+        left: 3px;
+        top: 6px;
+        width: 13px;
+        height: 13px;
+        background: url("/Wap/images/leftjt.png") no-repeat;
+        background-size: 100%;
+        content: "";
+      }
+    }
+  </style>
+  <a href="javascript:;" class="returnmap" id="returnmap">返回</a>
+  <div class="header clears">
+    <h2><img src="http://www.itheima.com/images/logo.png" alt="黑马程序员"></h2>
+    <ul class="fl clear">
+      <li><a href="/?hm">视频库首页</a></li>
+      <li><a href="/map?hm">免费视频教程</a></li>
+      <li>
+        <a href="javascript:;" class="nav_on">学习路线图</a>
+        <div class="fdnav">
+          <div class="fdnav_main">
+            <p class="java_icon">
+              <a href="/subject/javamap/index.html" rel="nofollow" target="_blank"><em><img src="http://www.itheima.com/2020gw/images/subjavaee.png"></em><span>JavaEE</span></a>
+            </p>
+            <p class="web_icon">
+              <a href="/subject/webmap/index.html" rel="nofollow" target="_blank"><em><img src="http://www.itheima.com/2020gw/images/subweb.png"></em><span>HTML&amp;JS+前端</span></a>
+            </p>
+            <p class="python_icon">
+              <a href="/subject/cloudmap/index.html" rel="nofollow" target="_blank"><em><img src="http://www.itheima.com/2020gw/images/subpython.png"></em><span>Python+大数据开发</span></a>
+            </p>
+            <p class="ai_icon">
+              <a href="/subject/aimap/index.html" rel="nofollow" target="_blank"><em><img src="http://www.itheima.com/2020gw/images/subai.png"></em><span>人工智能开发</span></a>
+            </p>
+            <p class="ui_icon">
+              <a href="/subject/uimap/index.html" rel="nofollow" target="_blank"><em><img src="http://www.itheima.com/2020gw/images/subui.png"></em><span>电商视觉设计</span></a>
+            </p>
+            <p class="test_icon">
+              <a href="/subject/testmap/index.html" rel="nofollow" target="_blank"><em><img src="http://www.itheima.com/2020gw/images/subtest.png"></em><span>软件测试</span></a>
+            </p>
+            <p class="xmt_icon">
+              <a href="/subject/xmtmap/index.html" rel="nofollow" target="_blank"><em><img src="http://www.itheima.com/2020gw/images/subxmt.png"></em><span>新媒体+短视频直播运营</span></a>
+            </p>
+            <p class="pm_icon">
+              <a href="/subject/pmmap/index.html" rel="nofollow" target="_blank"><em><img src="http://www.itheima.com/2020gw/images/subpm.png"></em><span>产品经理</span></a>
+            </p>
+            <p class="jcdl_icon">
+              <a href="/subject/jcdlmap/index.html" rel="nofollow" target="_blank"><em><img src="http://www.itheima.com/2020gw/images/subjcdl.png"></em><span>集成电路应用开发（含嵌入式）</span></a>
+            </p>
+          </div>
+        </div>
+      </li>
+      <li><a href="/open?hm">直播公开课</a></li>
+      <li><a href="/gongju?hm">学习工具</a></li>
+    </ul>
+    <div class="head_sub">
+      <div class="head_tit">
+        <div class="xqtop">
+          <b>选择学科</b>
+          <p><span>JavaEE</span><img src="http://www.itheima.com/2020gw/images/kczxdown.png"></p>
+        </div>
+        <div class="xqalls">
+          <ul>
+            <li><a href="/subject/javamap/index.html" target="_blank">JavaEE</a></li>
+            <li><a href="/subject/webmap/index.html" target="_blank">HTML&JS+前端</a></li>
+            <li><a href="/subject/cloudmap/index.html" target="_blank">Python+大数据开发</a></li>
+            <li><a href="/subject/aimap/index.html" target="_blank">人工智能开发</a></li>
+            <li><a href="/subject/uimap/index.html" target="_blank">电商视觉设计</a></li>
+            <li><a href="/subject/testmap/index.html" target="_blank">软件测试</a></li>
+            <li><a href="/subject/xmtmap/index.html" target="_blank">新媒体+短视频直播运营</a></li>
+            <li><a href="/subject/pmmap/index.html" target="_blank">产品经理</a></li>
+            <li><a href="/subject/jcdlmap/index.html" target="_blank">集成电路应用开发（含嵌入式）</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="zx zx2021">
+    <ul>
+      <!-- <li class="li_zxtop">
+        <a href="javascript:;" class="itcast_click" rel="nofollow">
+          <span class="icon_s">&nbsp;</span>
+          <p id="loading">咨询</p>
+        </a>
+      </li> -->
+      <li class="li_st">
+        <a href="javascript:;" class="itcast_click" rel="nofollow">
+          <span class="icon_s">&nbsp;</span>
+          <p>试听</p>
+        </a>
+      </li>
+      <li class="li_bm">
+        <a href="https://www.itheima.com/flow/flow.html" target="_blank">
+          <span class="icon_s">&nbsp;</span>
+          <p>报名</p>
+        </a>
+      </li>
+    </ul>
+    <div class="li_6" id="back">
+      <a href="javascript:void(0);">
+        <span class="icon_s">&nbsp;</span>
+      </a>
+    </div>
+  </div>
+  <script src="https://www.itheima.com/js/zx.js"></script>
+  <script>
+    var locurl = location.search;
+    var locurlsrc;
+    if (locurl.indexOf("?") != -1) {
+      var one = locurl.lastIndexOf("?");
+      locurl = locurl.substring(one, locurl.length);
+      locurlsrc = locurl.substr(1);
+    }
+    $.get("//yun.itheima.com/api.php/itcast/history", { url: window.location.href },
+      function(data){
+        if(data){
+          var dataurl = urlFn(data);
+          $('#returnmap').attr('href',dataurl);
+          $('#returnmap').show();
+        }
+      });
+    function urlFn(hrefurl){
+      if(hrefurl.indexOf("?") != -1){
+        return hrefurl+"$"+locurlsrc;
+      }else{
+        return hrefurl+"?"+locurlsrc;
+      }
+    }
+
+    $(".head_tit").each(function(){
+      var s=$(this);
+      var dt=$(this).children("b");
+      var dd=$(this).children(".xqalls");
+      var ind = 0;
+      var _show=function(){dd.show();dt.hide();ind=1;};
+      var _hide=function(){dd.hide();dt.show();ind=0;};
+      s.click(function(){
+        ind==0?_show():_hide();
+      });
+      $("body").click(function(i){
+        !$(i.target).parents(".head_tit").first().is(s) ? _hide():"";
+      });
+    });
+
+
+​
+	setTimeout(function(){
+    $(".qimo_zx").show();
+  },6000);
+    $(".cxhdpic2,.cxhdpic1").hover(function(){
+      $(".cxhdpic1").show();
+    },function(){
+      $(".cxhdpic1").hide();
+    });
+
+    $("body").on("click",".itcast_click",function(){
+      qimosdk.hideChatBox();
+      setTimeout(function(){
+        qimoChatClick();
+      },200);
+    });
+
+    setTimeout(function(){
+      var timer = null;
+      var qimo_chatpup = document.getElementById('qimo_chatpup');
+      $("body").on("click",".itcast_click",function(){
+        qimosdk.hideChatBox();
+        qimo_chatpup.style.bottom = "-500px";
+        setTimeout(function(){
+          qimoChatClick();
+          var ind = -500;
+          timer = setInterval(function(){
+            ind+=20;
+            if(ind>-20){clearInterval(timer);}
+            qimo_chatpup.style.bottom = ind+"px";
+          },1);
+        },200);
+      });
+    },1500);
+
+    //控制页面跳转---小程序、公众号、非微信跳转方式 【modelName---vue路由名字】
+    function navigate(modelName){
+      this.isMiniProgram(function(res){//判断是否是小程序页面的回调函数
+        if (res) {//小程序页面
+          wx.miniProgram.navigateTo({url: '/pages/classes/classes?id=' + modelName});
+        } else {
+          window.open('http://yun.itheima.com/course/'+modelName+'.html');
+        }
+      })
+    }
+    function isMiniProgram(callback) { //是否为小程序环境
+      //是否在微信环境
+      if (!isWeixin()) {
+        callback(false);
+      } else {
+        //微信API获取当前运行环境
+        wx.miniProgram.getEnv(function(res){
+          if (res.miniprogram) {//小程序环境
+            callback(true);
+          } else {
+            callback(false);
+          }
+        })
+      }
+    }
+
+    function isWeixin(){
+      var ua = navigator.userAgent.toLowerCase();
+      if(ua.match(/MicroMessenger/i)=="micromessenger") {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+  </script>
+  <div class="banjava">
+    <h2><span>黑马程序员Java学习路线图</span>（2023官方完整版）</h2>
+    <p><span>0基础 → 年薪30w，自学必备干货<em>，</em>下方含全套视频+源码资料</span></p>
+  </div>
+  <div class="box">
+    <ul>
+      <li class="boxli1">
+        <div class="boxlidiv">
+          <h3><span class="no">一、</span><span>Java基础</span><span class="no2">（适合零基础学习）</span><em>01</em></h3>
+          <p class="boxp1">Java基本语法</p>
+          <p class="boxp1">Java的面向对象</p>
+          <p class="boxp1">集合技术&I/O技术</p>
+          <p class="boxp1">网络编程&多线程技术</p>
+          <p class="boxp2">JDK的新特性&基础<br />加强</p>
+          <p class="boxp1">XML配置解析技术</p>
+          <div class="boxbot">
+            <h4>阶段案例实战</h4>
+            <span>* 双色球系统</span>
+            <span>* ATM存取款一体机系统</span>
+            <span>* 即时通信软件：内网通模拟</span>
+            <span>* 即时通信软件：内网通模拟（引入线程池优化）</span>
+            <span>* 文件上传服务器</span>
+            <span>* 购物商城系统</span>
+            <span>* 电影院购票系统</span>
+          </div>
+        </div>
+        <div class="boxa">
+          <span>课程视频（0基础学习，任选一套即可）</span>
+          <a href="javascript:navigate('936');" class="box4p1a1 moreline">1、黑马程序员20天Java基础从入门到精通视频教程</a>
+          <a href="javascript:navigate('1002');" class="box4p1a2 moreline">2、Java入门到起飞，含斯坦福大学练习题+力扣算法题+大厂java面试题</a>
+          <a href="javascript:navigate('1014');" class="box4p1a2 moreline">3、2023新版Java零基础快速入门，一套超哇塞的Java基础课程</a>
+          <a href="javascript:navigate('540');" class="box4p1a2 moreline">4、黑马程序员全套Java教程Java基础入门视频教程，零基础小白自学Java必备教程</a>
+        </div>
+      </li>
+      <li class="boxli2">
+        <div class="boxlidiv">
+          <h3><span class="no">二、</span><span>JavaWeb</span><em>02</em></h3>
+          <p class="boxp2">数据库<br />MySQL</p>
+          <p class="boxp2">数据库连接技术<br />JDBC</p>
+          <p class="boxp2">网页开发技术<br />HTML</p>
+          <p class="boxp2">样式表技术<br />CSS</p>
+          <p class="boxp2">网页脚本技术<br />JavaScript</p>
+          <p class="boxp2">服务容器Tomcat &<br />HTTP协议</p>
+          <p class="boxp2">动态网页开发技术<br />Servlet&Jsp</p>
+          <p class="boxp2">异步交互技术<br />Ajax</p>
+          <p class="boxp2">前端开发框架<br />Vue</p>
+          <div class="boxbot">
+            <h4>阶段案例实战</h4>
+            <span>* 豆瓣音乐表结构设计模拟</span>
+            <span>* 自定义HTTP服务器</span>
+            <span>* 京东品牌数据维护模拟</span>
+            <span>* 登陆鉴权</span>
+          </div>
+        </div>
+        <div class="boxa">
+          <span>课程视频</span>
+          <a href="javascript:navigate('1021');" class="box4p2a1 moreline">1、2023新版JavaWeb企业开发全流程</a>
+          <a href="javascript:navigate('945');" class="box4p2a1 moreline">2、Java web从入门到企业实战完整版视频教程</a>
+        </div>
+      </li>
+      <li class="boxli3">
+        <div class="boxlidiv">
+          <h3><span class="no">三、</span><span>Java开发框架</span><em>03</em></h3>
+          <p class="boxp2">服务开发框架<br />Spring</p>
+          <p class="boxp2">Web开发框架<br />SpringMVC</p>
+          <p class="boxp2">持久层开发框架<br />Mybatis </p>
+          <p class="boxp2">持久层开发框架<br />Mybatis Plus </p>
+          <p class="boxp2">服务快速开发技术<br />SpringBoot </p>
+          <p class="boxp2">版本控制<br />Git</p>
+          <p class="boxp2">项目构建<br />Maven</p>
+          <p class="boxp2">服务器系统<br />Linux</p>
+          <div class="boxbot">
+            <h4>项目实战（任选其一学习即可）</h4>
+            <span>* 医疗项目-传智健康</span>
+            <span>* 生活服务项目-瑞吉外卖</span>
+            <span>* 企业服务项目-汇客CRM</span>
+          </div>
+        </div>
+        <div class="boxa">
+          <span>课程视频</span>
+          <a href="javascript:navigate('853');" class="box4p3a1 moreline">1、SSM框架视频教程[Spring+SpringMVC+<i></i>MyBatis全套]</a>
+          <a href="javascript:navigate('997');" class="box4p3a1">2、全面深度讲解Spring5底层原理</a>
+          <a href="javascript:navigate('891');" class="box4p3a2 moreline">3、Java项目开发必会管理工具Maven从基础到高级视频教程</a>
+          <a href="javascript:navigate('861');" class="box4p3a3">4、完整的个Git项目管理工具视频教程</a>
+          <a href="javascript:navigate('1029');" class="box4p3a4 moreline">5、Java企业级项目《苍穹外卖》全套视频教程</a>
+          <a href="javascript:navigate('999');" class="box4p3a4 moreline">6、企业级生活服务项目《瑞吉外卖》全套教程</a>
+          <a href="javascript:navigate('903');" class="box4p3a4 moreline">7、超完整的企业级医疗行业项目《传智健康》视频教程</a>
+        </div>
+      </li>
+      <li class="boxli4">
+        <div class="boxlidiv">
+          <h3><span class="no">四、</span><span>中间件&服务框架</span><em>04</em></h3>
+          <p class="boxp2">微服务注册中心<br />Spring Cloud Eureka</p>
+          <p class="boxp2">微服务调用<br />Spring Cloud OpenFeign</p>
+          <p class="boxp2">客户端负载均衡<br />Spring Cloud Ribbon</p>
+          <p class="boxp2">微服务网关<br />Spring Cloud Gateway</p>
+          <p class="boxp2">微服务统一配置中心<br />Spring Cloud Alibaba Nacos</p>
+          <p class="boxp2">微服务保护<br />Spring Cloud Alibaba Sentinel</p>
+          <p class="boxp2">消息中间件<br />RabbitMQ</p>
+          <p class="boxp2">分布式缓存<br />Redis</p>
+          <p class="boxp2">分布式搜索<br />ElasticSearch</p>
+          <p class="boxp2">分布式事务<br />Spring Cloud Alibaba Seata</p>
+          <p class="boxp2">微服务部署<br />Docker</p>
+        </div>
+        <div class="boxa">
+          <span>课程视频</span>
+          <a href="javascript:navigate('934');" class="box4p4a1 moreline">1、微服务全技术栈课程视频教程</a>
+          <a href="javascript:navigate('1034');" class="box4p4a1 moreline">2、MybatisPlus快速入门</a>
+          <a href="javascript:navigate('1036');" class="box4p4a1 moreline">3、Docker快速入门到项目部署</a>
+          <a href="javascript:navigate('1038');" class="box4p4a1 moreline">4、RabbitMQ消息队列入门到实战</a>
+        </div>
+      </li>
+      <li class="boxli5">
+        <div class="boxlidiv">
+          <h3><span class="no">五、</span><span>项目实战</span><span style="font-size: 12px;padding-top: 0;">（任选其二学习即可）</span><em>05</em></h3>
+          <p class="boxp1">社交项目-探花交友</p>
+          <p class="boxp1">资讯项目-黑马头条</p>
+          <p class="boxp1">企业服务项目-iHRM</p>
+          <p class="boxp1">生活服务项目-好客租房 </p>
+          <p class="boxp1">金融项目-万信金融</p>
+          <p class="boxp2">秒杀<br />深度解决方案</p>
+          <p class="boxp2">权限管理一体化通用<br />解决方案</p>
+          <p class="boxp2">短信网关平台通用<br />解决方案</p>
+          <p class="boxp2">工作流<br />深度解决方案</p>
+        </div>
+        <div class="boxa">
+          <span>课程视频</span>
+          <a href="javascript:navigate('1015');" class="box4p3a1">1、Java企业级微服务项目《学成在线》视频教程</a>
+          <a href="javascript:navigate('1026');" class="box4p3a1">2、Java企业级微服务项目《黑马头条》视频教程</a>
+          <a href="javascript:navigate('878');" class="box4p5a1 moreline">3、SaaS移动办公完整版《iHRM 人力资源管理系统》视频教程</a>
+          <a href="javascript:navigate('894');" class="box4p5a2 moreline">4、Java企业级解决方案《好客租房》视频教程</a>
+          <a href="javascript:navigate('902');" class="box4p5a3 moreline">5、Java互联网金融行业项目《万信金融》视频教程</a>
+          <a href="javascript:navigate('905');" class="box4p5a4 moreline">6、黑马程序员Java《品达通用权限》项目视频教程</a>
+          <a href="javascript:navigate('906');" class="box4p5a5 moreline">7、企业级项目《集信达短信平台》视频教程</a>
+        </div>
+      </li>
+      <li class="boxli6">
+        <div class="boxlidiv">
+          <h3><span class="no">六、</span><span>大厂面试专题</span><em>06</em></h3>
+          <p class="boxp1">并发篇&虚拟机篇</p>
+          <p class="boxp1">框架篇&分布式篇</p>
+          <p class="boxp1">缓存篇&数据库篇</p>
+        </div>
+        <div class="boxa">
+          <span>课程视频</span>
+          <a href="javascript:navigate('1017');" class="box4p6a1 moreline">1、Java数据结构与算法</a>
+          <a href="javascript:navigate('1023');" class="box4p6a1 moreline">2、大厂Java面试专题视频教程</a>
+          <a href="javascript:navigate('1039');" class="box4p6a1 moreline">3、JVM虚拟机入门到实战教程</a>
+          <a href="javascript:navigate('1006');" class="box4p6a1 moreline">4、Java百度地图全套实战教程</a>
+        </div>
+        <div class="boxbot2 tzzl">
+          <h4>拓展资料</h4>
+          <span>1、<a href="https://mybatis.org/mybatis-3/zh/" target="_blank">MyBatis官网</a></span>
+          <span>2、<a href="https://spring.io" target="_blank">Spring官网</a></span>
+          <span>3、<a href="https://redis.io" target="_blank">Redis官网</a></span>
+          <span>4、<a href="https://www.rabbitmq.com" target="_blank">RabbitMQ官网</a></span>
+          <span>5、<a href="https://www.docker.com" target="_blank">Docker官网</a></span>
+          <span>6、<a href="https://elasticsearch.cn" target="_blank">ES官网</a></span>
+          <span>7、<a href="https://maven.apache.org/" target="_blank">Maven官网</a></span>
+          <span>8、<a href="http://seata.io/zh-cn/" target="_blank">Seata官网</a></span>
+          <span>9、<a href="https://sentinelguard.io/zh-cn/" target="_blank">Sentinel官网</a></span>
+        </div>
+        <img src="./images/ewm2.jpg" class="pc">
+        <img src="./images/ewm4.jpg" class="yd">
+        <br />
+      </li>
+    </ul>
+  </div>
+  <div class="boxbotmain">
+    <h3>学习路线图说明</h3>
+    <p><span>阶段一</span>Java基础：具备Java语言编程基础和IO、多线程、网络编程等开发能力，但还不符合企业用人标准，可为后期学习打下坚实基础</p>
+    <p><span>阶段二</span>JavaWeb：掌握服务器的基本概念，掌握JavaWeb开发基础知识，掌握数据库的基本使用和Java操作数据库，满足Java软件开发行业的初级需求</p>
+    <p><span>阶段三</span>Java开发框架：掌握SpringBoot开发基本流程，MybatisPlus数据库端操作，前端框架vue，可应对Java开发初中级岗位，据相关求职网站数据薪资可达9000-12000元/月</p>
+    <p><span>阶段四</span>中间件&服务框架：本阶段课程符合Java开发市场发展趋势，学员可轻松应对Java互联网开发大部分岗位，根据市场反馈，薪资可达15000-18000元/月</p>
+    <p><span>阶段五</span>项目实战：模拟企业真实项目场景，提高技术应用能力和项目解决能力</p>
+    <p><span>阶段六</span>大厂面试专题：围绕大厂高频面试题，给出详尽解答，针对JVM、数据库优化、Spring系列、分布式系列等专题精心设计<!-- ，圆你大厂梦 -->！</p>
+  </div>
+</div>
+<script type="text/Javascript" src="/js/index.js?v20220721"></script>
+</body>
+</html>
+
+
+
